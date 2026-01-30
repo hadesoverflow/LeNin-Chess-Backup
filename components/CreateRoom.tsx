@@ -40,7 +40,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
         >
           🎮 Tạo Phòng Chơi Online
         </h1>
-        <p className="text-center text-stone-600 text-sm mb-6">Tối đa 4 người chơi (bạn + 3 bạn bè)</p>
+        <p className="text-center text-stone-600 text-sm mb-6">Tối đa 6 người chơi (bạn + 5 bạn bè)</p>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
@@ -98,8 +98,8 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
                 🤖 Số lượng Bot (để thêm bạn bè)
               </h2>
               <p className="text-sm text-stone-600 mb-2">Thêm Bot để đầy phòng, sau đó bạn bè có thể tham gia hoặc thay Bot</p>
-              <div className="flex w-full bg-[#c2b29a] rounded-lg p-1 shadow-inner">
-                {[0, 1, 2, 3].map((count) => (
+              <div className="flex w-full bg-[#c2b29a] rounded-lg p-1 shadow-inner gap-1">
+                {[0, 1, 2, 3, 4, 5].map((count) => (
                   <button
                     key={count}
                     type="button"
@@ -110,7 +110,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
                         : 'text-stone-700 hover:bg-[#d3c3a7]'
                     }`}
                   >
-                    {count === 0 ? 'Không' : `${count} Bot`}
+                    {count === 0 ? 'Không' : `${count}`}
                   </button>
                 ))}
               </div>

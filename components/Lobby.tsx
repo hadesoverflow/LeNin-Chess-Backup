@@ -34,11 +34,11 @@ const Lobby: React.FC<LobbyProps> = ({ room, session, onStartGame, onBack }) => 
     }
 
     const roomFullness = room.sessions.length;
-    const slotsLeft = 4 - roomFullness;
-    const roomStatusMessage = roomFullness === 4 
+    const slotsLeft = 6 - roomFullness;
+    const roomStatusMessage = roomFullness === 6 
         ? '🔒 Phòng đầy - Chỉ chủ phòng có thể bắt đầu'
         : roomFullness === 1
-        ? '👥 Cần thêm 3 người để chơi với 4 người'
+        ? '👥 Cần thêm 5 người để chơi với 6 người'
         : `👥 Cần thêm ${slotsLeft} người để đầy phòng`;
 
     return (
@@ -73,7 +73,7 @@ const Lobby: React.FC<LobbyProps> = ({ room, session, onStartGame, onBack }) => 
 
         <div className="mb-6">
             <h2 className="text-2xl font-bold text-stone-800 mb-3 text-center border-t-2 border-b-2 py-2 border-yellow-700/50">
-                Người chơi ({room.sessions.length}/4)
+                Người chơi ({room.sessions.length}/6)
             </h2>
             <ul className="space-y-3">
                 {room.sessions.map((player, index) => (
@@ -104,7 +104,7 @@ const Lobby: React.FC<LobbyProps> = ({ room, session, onStartGame, onBack }) => 
                     </li>
                 ))}
             </ul>
-             {isHost && room.sessions.length < 4 && (
+             {isHost && room.sessions.length < 6 && (
                 <button 
                     onClick={handleAddBot} 
                     className="w-full mt-4 bg-green-600 text-white font-semibold py-3 px-4 rounded-lg shadow hover:bg-green-700 transition-all transform hover:scale-105"

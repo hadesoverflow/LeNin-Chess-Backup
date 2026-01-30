@@ -37,7 +37,7 @@ class GameService {
         let availableChars = CHARACTERS_LIST.filter(c => c.img !== characterImg);
 
         for(let i=0; i < numBots; i++) {
-            if (newRoom.sessions.length >= 4) break;
+            if (newRoom.sessions.length >= 6) break;
             if (availableChars.length === 0) break; // No more unique characters
 
             const botChar = availableChars.splice(Math.floor(Math.random() * availableChars.length), 1)[0];
@@ -56,7 +56,7 @@ class GameService {
         if (!room) {
             throw new Error("Phòng không tồn tại!");
         }
-        if (room.sessions.length >= 4) {
+        if (room.sessions.length >= 6) {
             throw new Error("Phòng đã đầy!");
         }
         if (room.gameState) {
@@ -75,7 +75,7 @@ class GameService {
 
     public async addBot(roomId: string, hostSessionId: string) {
         const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
-        if (!room || room.hostId !== hostSessionId || room.sessions.length >= 4) return;
+        if (!room || room.hostId !== hostSessionId || room.sessions.length >= 6) return;
         
         const usedImages = room.sessions.map(s => s.characterImg);
         let availableChars = CHARACTERS_LIST.filter(c => !usedImages.includes(c.img));

@@ -17,9 +17,14 @@ export class StorageService {
 
     if (this.useRedis) {
       try {
-        const { redisService } = require('./redisService');
-        this.redisService = redisService;
-        console.log('[Storage] Using Redis backend');
+        // Dynamically import Redis service
+        import('./redisService').then(module => {
+          this.redisService = module.redisService;
+          console.log('[Storage] Using Redis backend');
+        }).catch(error => {
+          console.warn('[Storage] Redis not available, falling back to in-memory:', error);
+          this.useRedis = false;
+        });
       } catch (error) {
         console.warn('[Storage] Redis not available, falling back to in-memory');
         this.useRedis = false;
