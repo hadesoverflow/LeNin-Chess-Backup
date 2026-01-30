@@ -16,7 +16,7 @@ export class RedisService {
     if (!RedisService.instance) {
       RedisService.instance = new RedisService();
     }
-    return RedisService;
+    return RedisService.instance;
   }
 
   /**
@@ -104,8 +104,8 @@ export class RedisService {
         throw new Error('Room not found');
       }
       
-      // Check if room is full
-      if (room.sessions.length >= 4) {
+      // Check if room is full (max 6 players)
+      if (room.sessions.length >= 6) {
         throw new Error('Room is full');
       }
       
@@ -159,7 +159,7 @@ export class RedisService {
         throw new Error('Room not found');
       }
       
-      if (room.sessions.length >= 4) {
+      if (room.sessions.length >= 6) {
         throw new Error('Room is full');
       }
       

@@ -15,6 +15,7 @@ import { getGroupColors } from './utils';
 import QuestionModal from './components/QuestionModal';
 import CurrentPlayerStats from './components/CurrentPlayerStats';
 import SoundManager from './components/SoundManager';
+import { debugStorageSetup } from './lib/debugStorage';
 
 interface PlayerConfig {
     name: string;
@@ -36,6 +37,11 @@ const App: React.FC = () => {
     const [volume, setVolume] = useState(0.5); // 0 to 1
     const [showVolumeSlider, setShowVolumeSlider] = useState(false);
     const volumeControlRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        // Debug storage setup on mount
+        debugStorageSetup();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
