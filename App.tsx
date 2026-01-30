@@ -173,12 +173,17 @@ const App: React.FC = () => {
         setAppState('playing');
     };
 
-    const handleCreateRoom = (config: GameSetupConfig) => {
-        setGameMode('online');
-        const { room, session } = gameService.createRoom(config.name, config.characterImg, config.numBots);
-        setRoom(room);
-        setSession(session);
-        setAppState('lobby');
+    const handleCreateRoom = async (config: GameSetupConfig) => {
+        try {
+            setGameMode('online');
+            const { room, session } = await gameService.createRoom(config.name, config.characterImg, config.numBots);
+            setRoom(room);
+            setSession(session);
+            setAppState('lobby');
+        } catch (error) {
+            console.error('[v0] Error creating room:', error);
+            setModal({ title: 'Lỗi', content: 'Không thể tạo phòng. Vui lòng thử lại.' });
+        }
     };
 
     const handleJoinSuccess = (room: Room, session: Session) => {
@@ -188,9 +193,14 @@ const App: React.FC = () => {
         setAppState('lobby');
     };
 
-    const handleStartOnlineGame = () => {
+    const handleStartOnlineGame = async () => {
         if (room && session?.id === room.hostId) {
-            gameService.startGame(room.id);
+            try {
+                await gameService.startGame(room.id);
+            } catch (error) {
+                console.error('[v0] Error starting game:', error);
+                setModal({ title: 'Lỗi', content: 'Không thể bắt đầu trò chơi. Vui lòng thử lại.' });
+            }
         }
     };
 

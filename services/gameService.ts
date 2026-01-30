@@ -1,6 +1,7 @@
 import type { Room, Session, GameState, Player, GameLogEntry, TileData, AnsweredQuestion, Question, Answer, CardType, QuizType, QuestionContext } from '../types';
 import { PLAYER_COLORS, PLAYER_STARTING_KP, TILES, CHARACTERS_LIST, CARDS_INFO, CARD_COSTS, PLAYER_ELIMINATION_THRESHOLD } from '../constants';
 import { QUESTIONS } from '../questions';
+import { storageService } from './storageService';
 
 
 type GameStateListener = (room: Room) => void;
@@ -19,11 +20,11 @@ const LIFELINE_COSTS = {
 };
 
 class GameService {
-    private rooms: Map<string, Room> = new Map();
+    private rooms: Map<string, Room> = new Map(); // Fallback for local game
     private listeners: Map<string, GameStateListener[]> = new Map();
     
     // --- Room Management ---
-    public createRoom(hostName: string, characterImg: string, numBots: number): { room: Room; session: Session } {
+    public async createRoom(hostName: string, characterImg: string, numBots: number): Promise<{ room: Room; session: Session }> {
         const roomId = this.generateRoomId();
         const hostSession = this.createSession(hostName, characterImg);
         const newRoom: Room = {
@@ -44,12 +45,14 @@ class GameService {
             newRoom.sessions.push(botSession);
         }
 
-        this.rooms.set(roomId, newRoom);
+        // Save to storage (Redis or in-memory)
+        await storageService.saveRoom(newRoom);
+        this.rooms.set(roomId, newRoom); // Keep local copy for local games
         return { room: newRoom, session: hostSession };
     }
 
-    public joinRoom(roomId: string, playerName: string, characterImg: string): { room: Room; session: Session } {
-        const room = this.rooms.get(roomId.toUpperCase());
+    public async joinRoom(roomId: string, playerName: string, characterImg: string): Promise<{ room: Room; session: Session }> {
+        const room = await storageService.getRoom(roomId.toUpperCase()) || this.rooms.get(roomId.toUpperCase());
         if (!room) {
             throw new Error("Phòng không tồn tại!");
         }
@@ -61,12 +64,17 @@ class GameService {
         }
         const newSession = this.createSession(playerName, characterImg);
         room.sessions.push(newSession);
+        
+        // Save to storage
+        await storageService.saveRoom(room);
+        this.rooms.set(room.id, room); // Keep local copy
+        
         this.notifyListeners(room.id);
         return { room, session: newSession };
     }
 
-    public addBot(roomId: string, hostSessionId: string) {
-        const room = this.rooms.get(roomId);
+    public async addBot(roomId: string, hostSessionId: string) {
+        const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
         if (!room || room.hostId !== hostSessionId || room.sessions.length >= 4) return;
         
         const usedImages = room.sessions.map(s => s.characterImg);
@@ -79,16 +87,26 @@ class GameService {
     
         const botSession = this.createSession(`Bot ${botNumber}`, botChar.img, true);
         room.sessions.push(botSession);
+        
+        // Save to storage
+        await storageService.saveRoom(room);
+        this.rooms.set(roomId, room);
+        
         this.notifyListeners(roomId);
     }
     
-    public removeBot(roomId: string, hostSessionId: string, botSessionId: string) {
-        const room = this.rooms.get(roomId);
+    public async removeBot(roomId: string, hostSessionId: string, botSessionId: string) {
+        const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
         if (!room || room.hostId !== hostSessionId) return;
 
         const botIndex = room.sessions.findIndex(s => s.id === botSessionId && s.isBot);
         if (botIndex > -1) {
             room.sessions.splice(botIndex, 1);
+            
+            // Save to storage
+            await storageService.saveRoom(room);
+            this.rooms.set(roomId, room);
+            
             this.notifyListeners(roomId);
         }
     }
@@ -115,12 +133,17 @@ class GameService {
         this.rooms.set(LOCAL_ROOM_ID, room);
     }
 
-    public startGame(roomId: string) {
-        const room = this.rooms.get(roomId);
+    public async startGame(roomId: string) {
+        const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
         if (!room) return;
 
         room.gameState = this.initializeGameState(room.sessions);
         this.addLog(room.id, `Trò chơi bắt đầu! Lượt của ${room.gameState.players[0].name}.`);
+        
+        // Save to storage
+        await storageService.saveRoom(room);
+        this.rooms.set(roomId, room);
+        
         this.notifyListeners(roomId);
         this.checkBotTurn(roomId);
     }
@@ -925,7 +948,7 @@ class GameService {
         state.currentPlayerIndex = nextPlayerIndex;
         const nextActivePlayer = state.players[nextPlayerIndex];
 
-        this.addLog(roomId, `--- [Lượt ${state.turnNumber}] Lượt của ${nextActivePlayer.name} ---`);
+        this.addLog(roomId, `--- [Lượt ${state.turnNumber}] L��ợt của ${nextActivePlayer.name} ---`);
         state.canRoll = true;
         
         this.notifyListeners(roomId);
