@@ -2,10 +2,15 @@ import { Redis } from '@upstash/redis';
 
 // Initialize Redis client from Upstash
 // Use import.meta.env for Vite
+const redisUrl = import.meta.env.VITE_UPSTASH_REDIS_REST_URL;
+const redisToken = import.meta.env.VITE_UPSTASH_REDIS_REST_TOKEN;
+
 const redis = new Redis({
-  url: import.meta.env.VITE_UPSTASH_REDIS_REST_URL || '',
-  token: import.meta.env.VITE_UPSTASH_REDIS_REST_TOKEN || '',
+  url: redisUrl || '',
+  token: redisToken || '',
 });
+
+console.log('[RedisService] Initialized with URL:', !!redisUrl, 'Token:', !!redisToken);
 
 export class RedisService {
   private static instance: RedisService;

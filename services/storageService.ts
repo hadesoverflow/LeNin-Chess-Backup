@@ -1,4 +1,5 @@
 import type { Room } from '../types';
+import { redisService } from './redisService';
 
 /**
  * Abstract storage service that can work with both in-memory and Redis
@@ -6,7 +7,6 @@ import type { Room } from '../types';
 export class StorageService {
   private rooms: Map<string, Room> = new Map();
   private useRedis: boolean = false;
-  private redisService: any = null;
 
   constructor() {
     // Check if Redis is available (using Vite env variables)
@@ -16,19 +16,7 @@ export class StorageService {
     this.useRedis = !!(hasRedisUrl && hasRedisToken);
 
     if (this.useRedis) {
-      try {
-        // Dynamically import Redis service
-        import('./redisService').then(module => {
-          this.redisService = module.redisService;
-          console.log('[Storage] Using Redis backend');
-        }).catch(error => {
-          console.warn('[Storage] Redis not available, falling back to in-memory:', error);
-          this.useRedis = false;
-        });
-      } catch (error) {
-        console.warn('[Storage] Redis not available, falling back to in-memory');
-        this.useRedis = false;
-      }
+      console.log('[Storage] Using Redis backend');
     } else {
       console.log('[Storage] Using in-memory backend');
     }
@@ -38,8 +26,13 @@ export class StorageService {
    * Save a room
    */
   async saveRoom(room: Room): Promise<void> {
-    if (this.useRedis && this.redisService) {
-      await this.redisService.saveRoom(room.id, room);
+    if (this.useRedis) {
+      try {
+        await redisService.saveRoom(room.id, room);
+      } catch (error) {
+        console.error('[Storage] Failed to save to Redis, using in-memory:', error);
+        this.rooms.set(room.id, room);
+      }
     } else {
       this.rooms.set(room.id, room);
     }
@@ -49,19 +42,30 @@ export class StorageService {
    * Get a room
    */
   async getRoom(roomId: string): Promise<Room | null> {
-    if (this.useRedis && this.redisService) {
-      return await this.redisService.getRoom(roomId);
-    } else {
-      return this.rooms.get(roomId) || null;
+    if (this.useRedis) {
+      try {
+        const room = await redisService.getRoom(roomId);
+        if (room) {
+          return room;
+        }
+      } catch (error) {
+        console.error('[Storage] Failed to get from Redis, checking in-memory:', error);
+      }
     }
+    return this.rooms.get(roomId) || null;
   }
 
   /**
    * Delete a room
    */
   async deleteRoom(roomId: string): Promise<void> {
-    if (this.useRedis && this.redisService) {
-      await this.redisService.deleteRoom(roomId);
+    if (this.useRedis) {
+      try {
+        await redisService.deleteRoom(roomId);
+      } catch (error) {
+        console.error('[Storage] Failed to delete from Redis:', error);
+        this.rooms.delete(roomId);
+      }
     } else {
       this.rooms.delete(roomId);
     }
@@ -71,11 +75,14 @@ export class StorageService {
    * Check if room exists
    */
   async roomExists(roomId: string): Promise<boolean> {
-    if (this.useRedis && this.redisService) {
-      return await this.redisService.roomExists(roomId);
-    } else {
-      return this.rooms.has(roomId);
+    if (this.useRedis) {
+      try {
+        return await redisService.roomExists(roomId);
+      } catch (error) {
+        console.error('[Storage] Failed to check Redis, checking in-memory:', error);
+      }
     }
+    return this.rooms.has(roomId);
   }
 
   /**

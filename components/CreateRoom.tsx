@@ -14,6 +14,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
+      console.log('[v0] Creating room with:', name.trim(), 'Bots:', numBots);
       onCreateRoom(name.trim(), selectedCharacter.img, numBots);
     }
   };

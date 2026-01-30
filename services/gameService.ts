@@ -26,6 +26,7 @@ class GameService {
     // --- Room Management ---
     public async createRoom(hostName: string, characterImg: string, numBots: number): Promise<{ room: Room; session: Session }> {
         const roomId = this.generateRoomId();
+        console.log('[v0] Creating room:', roomId);
         const hostSession = this.createSession(hostName, characterImg);
         const newRoom: Room = {
             id: roomId,
@@ -46,14 +47,19 @@ class GameService {
         }
 
         // Save to storage (Redis or in-memory)
+        console.log('[v0] Saving room to storage:', roomId);
         await storageService.saveRoom(newRoom);
         this.rooms.set(roomId, newRoom); // Keep local copy for local games
+        console.log('[v0] Room created successfully:', roomId);
         return { room: newRoom, session: hostSession };
     }
 
     public async joinRoom(roomId: string, playerName: string, characterImg: string): Promise<{ room: Room; session: Session }> {
+        console.log('[v0] Attempting to join room:', roomId);
         const room = await storageService.getRoom(roomId.toUpperCase()) || this.rooms.get(roomId.toUpperCase());
+        console.log('[v0] Room lookup result:', room ? 'Found' : 'Not found');
         if (!room) {
+            console.error('[v0] Room not found in Redis or local storage');
             throw new Error("Phòng không tồn tại!");
         }
         if (room.sessions.length >= 6) {

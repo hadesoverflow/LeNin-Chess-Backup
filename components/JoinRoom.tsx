@@ -19,9 +19,12 @@ const JoinRoom: React.FC<JoinRoomProps> = ({ onJoinSuccess, onBack }) => {
     setError(null);
     if (name.trim() && roomId.trim()) {
       try {
+        console.log('[v0] Attempting to join room:', roomId.trim());
         const { room, session } = await gameService.joinRoom(roomId.trim(), name.trim(), selectedCharacter.img);
+        console.log('[v0] Successfully joined room:', room.id);
         onJoinSuccess(room, session);
       } catch (err) {
+          console.error('[v0] Join error:', err);
           if (err instanceof Error) {
             setError(err.message);
         } else {
