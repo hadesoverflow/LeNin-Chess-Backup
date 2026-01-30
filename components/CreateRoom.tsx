@@ -35,16 +35,17 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
         }}
       >
         <h1
-          className="font-display text-5xl text-[#6b4c2f] text-center mb-8"
+          className="font-display text-5xl text-[#6b4c2f] text-center mb-2"
           style={{ textShadow: '1px 1px #fdf6e3' }}
         >
-          Tạo Phòng Chơi Online
+          🎮 Tạo Phòng Chơi Online
         </h1>
+        <p className="text-center text-stone-600 text-sm mb-6">Tối đa 4 người chơi (bạn + 3 bạn bè)</p>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
             <label htmlFor="playerName" className="block text-lg font-medium text-stone-800 mb-2">
-              Tên của bạn:
+              👤 Tên của bạn:
             </label>
             <input
               type="text"
@@ -59,7 +60,7 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
           </div>
 
           <div>
-            <label className="block text-lg font-medium text-stone-800 mb-3">Chọn nhân vật:</label>
+            <label className="block text-lg font-medium text-stone-800 mb-3">🎭 Chọn nhân vật:</label>
             <div className="grid grid-cols-4 gap-4">
               {CHARACTERS_LIST.map((char) => (
                 <button
@@ -94,8 +95,9 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
           
            <div>
               <h2 className="block text-lg font-medium text-stone-800 mb-3">
-                Số lượng đối thủ (Bot)
+                🤖 Số lượng Bot (để thêm bạn bè)
               </h2>
+              <p className="text-sm text-stone-600 mb-2">Thêm Bot để đầy phòng, sau đó bạn bè có thể tham gia hoặc thay Bot</p>
               <div className="flex w-full bg-[#c2b29a] rounded-lg p-1 shadow-inner">
                 {[0, 1, 2, 3].map((count) => (
                   <button
@@ -120,14 +122,14 @@ const CreateRoom: React.FC<CreateRoomProps> = ({ onCreateRoom, onBack }) => {
               onClick={onBack}
               className={`${buttonBaseClass} bg-[#585858] hover:bg-[#4a4a4a]`}
             >
-              Quay Lại
+              ← Quay Lại
             </button>
             <button
               type="submit"
               disabled={!name.trim()}
-              className={`${buttonBaseClass} bg-green-600 hover:bg-green-700`}
+              className={`${buttonBaseClass} bg-green-600 hover:bg-green-700 transform hover:scale-105`}
             >
-              Tạo Phòng
+              ✓ Tạo Phòng
             </button>
           </div>
         </form>
