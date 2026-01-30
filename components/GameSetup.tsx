@@ -38,113 +38,107 @@ const GameSetup: React.FC<GameSetupProps> = ({ mode, onStart, onBack }) => {
   const buttonBaseClass =
     'flex-1 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed';
 
-  const CharacterCard: React.FC<{char: typeof CHARACTERS_LIST[0], isSelected: boolean, onSelect: () => void}> = ({char, isSelected, onSelect}) => (
+  const CharacterCard: React.FC<{ char: typeof CHARACTERS_LIST[0], isSelected: boolean, onSelect: () => void }> = ({ char, isSelected, onSelect }) => (
     <button
-        type="button"
-        onClick={onSelect}
-        className={`cursor-pointer rounded-lg transition-all duration-200 border-2 p-0.5 ${
-            isSelected ? 'border-red-600' : 'border-transparent'
+      type="button"
+      onClick={onSelect}
+      className={`cursor-pointer rounded-xl transition-all duration-300 border-2 p-1 group relative ${isSelected ? 'border-soviet-gold bg-soviet-red/20 shadow-[0_0_15px_rgba(245,158,11,0.4)] scale-105' : 'border-stone-600 bg-stone-800/40 hover:border-stone-400'
         }`}
     >
-        <div className="bg-[#c2b29a] p-2 rounded-md shadow-sm h-full flex flex-col justify-between">
-            <div className="bg-[#ede4d1] rounded-sm aspect-square flex items-center justify-center overflow-hidden shadow-inner">
-                <img
-                    src={char.img}
-                    alt={char.name}
-                    className="w-full h-full object-contain p-1"
-                />
-            </div>
-            <p className="text-center font-bold text-xs text-stone-800 pt-1.5 leading-snug break-words">
-                {char.name}
-            </p>
+      <div className="bg-stone-200 rounded-lg p-2 shadow-inner h-full flex flex-col justify-between relative overflow-hidden">
+        {/* Card texture overlay */}
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cardboard-flat.png')] opacity-30 pointer-events-none"></div>
+
+        <div className="bg-stone-300 rounded-md aspect-square flex items-center justify-center overflow-hidden shadow-inner border border-stone-400">
+          <img
+            src={char.img}
+            alt={char.name}
+            className="w-full h-full object-contain p-1 transform group-hover:scale-110 transition-transform duration-500"
+          />
         </div>
+        <p className="text-center font-bold text-xs text-stone-800 pt-2 leading-snug break-words z-10 font-mono uppercase tracking-tighter">
+          {char.name}
+        </p>
+      </div>
+
+      {isSelected && (
+        <div className="absolute -top-2 -right-2 bg-soviet-gold text-red-900 rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-md z-20">✓</div>
+      )}
     </button>
   );
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <div
-        className="p-8 rounded-xl shadow-2xl border-2 border-[#a9997c]/50 w-full max-w-xl"
-        style={{
-          backgroundColor: '#d3c3a7',
-          backgroundImage:
-            'linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)',
-          backgroundSize: '15px 15px',
-        }}
-      >
-        <h1
-          className="font-display text-5xl text-[#6b4c2f] text-center mb-8"
-          style={{ textShadow: '1px 1px #fdf6e3' }}
-        >
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative z-10">
+      <div className="glass-panel p-8 w-full max-w-2xl border-4 border-soviet-gold/30">
+        <h1 className="font-display text-5xl md:text-6xl text-soviet-gold text-center mb-8 text-shadow-gold">
           {title}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-            <div>
-              <label htmlFor="playerName" className="block text-lg font-medium text-stone-800 mb-2">
-                Tên của bạn:
-              </label>
-              <input
-                type="text"
-                id="playerName"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={inputClass}
-                placeholder="Nhập tên nhà lý luận..."
-                maxLength={20}
-                required
-              />
-            </div>
+          <div className="space-y-3">
+            <label htmlFor="playerName" className="block text-xl font-bold text-stone-300">
+              Tên Nhà Lý Luận:
+            </label>
+            <input
+              type="text"
+              id="playerName"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-4 border-2 border-stone-600 rounded-xl bg-stone-900/50 text-stone-100 placeholder-stone-600 focus:border-soviet-gold focus:ring-1 focus:ring-soviet-gold focus:outline-none transition-all font-mono text-lg shadow-inner"
+              placeholder="Nhập tên của bạn..."
+              maxLength={20}
+              required
+              autoComplete="off"
+            />
+          </div>
 
-            <div>
-              <h2 className="block text-lg font-medium text-stone-800 mb-3">Chọn nhân vật của bạn:</h2>
-              <div className="grid grid-cols-4 gap-4">
-                {CHARACTERS_LIST.map((char) => (
-                  <CharacterCard
-                    key={char.name}
-                    char={char}
-                    isSelected={selectedCharacter.name === char.name}
-                    onSelect={() => setSelectedCharacter(char)}
-                  />
-                ))}
-              </div>
+          <div className="space-y-3">
+            <h2 className="block text-xl font-bold text-stone-300">Chọn Nhân Vật:</h2>
+            <div className="grid grid-cols-4 gap-4">
+              {CHARACTERS_LIST.map((char) => (
+                <CharacterCard
+                  key={char.name}
+                  char={char}
+                  isSelected={selectedCharacter.name === char.name}
+                  onSelect={() => setSelectedCharacter(char)}
+                />
+              ))}
             </div>
-            
-            <div>
-              <h2 className="block text-lg font-medium text-stone-800 mb-3">
-                Số lượng đối thủ (Bot)
-              </h2>
-              <div className="flex w-full bg-[#c2b29a] rounded-lg p-1 shadow-inner">
-                {[0, 1, 2, 3].map((count) => (
-                  <button
-                    key={count}
-                    type="button"
-                    onClick={() => setNumBots(count)}
-                    className={`flex-1 text-center font-bold py-2 rounded-md transition-colors duration-200 ${
-                      numBots === count
-                        ? 'bg-[#ede4d1] text-stone-900 shadow'
-                        : 'text-stone-700 hover:bg-[#d3c3a7]'
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="block text-xl font-bold text-stone-300">
+              Số Lượng Đối Thủ (Bot):
+            </h2>
+            <div className="flex w-full bg-stone-900/50 rounded-xl p-1 shadow-inner border border-stone-700">
+              {[0, 1, 2, 3].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => setNumBots(count)}
+                  className={`flex-1 text-center font-bold py-3 rounded-lg transition-all duration-200 ${numBots === count
+                      ? 'bg-gradient-to-br from-soviet-gold to-yellow-600 text-stone-900 shadow-lg'
+                      : 'text-stone-400 hover:bg-stone-800'
                     }`}
-                  >
-                    {count === 0 ? 'Không' : `${count} Bot`}
-                  </button>
-                ))}
-              </div>
+                >
+                  {count === 0 ? 'Không' : `${count} Bot`}
+                </button>
+              ))}
             </div>
+          </div>
 
-
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-4 border-t border-stone-700/50 mt-8">
             <button
               type="button"
               onClick={onBack}
-              className={`${buttonBaseClass} bg-[#585858] hover:bg-[#4a4a4a]`}
+              className="flex-1 btn-secondary text-lg py-4"
             >
               Quay Lại
             </button>
             <button
               type="submit"
               disabled={!name.trim()}
-              className={`${buttonBaseClass} ${submitButtonColor}`}
+              className={`flex-1 btn-gold text-lg py-4`}
             >
               {submitButtonText}
             </button>

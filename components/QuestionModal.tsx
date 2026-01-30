@@ -43,7 +43,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
     if (timerRef.current) clearInterval(timerRef.current);
     onAnswer(index);
   };
-  
+
   const handleEliminateClick = () => {
     if (lifelineStatus.eliminate) return;
     onUseLifeline('eliminate');
@@ -61,61 +61,131 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
   const eliminatedAnswers = lifelineStatus.eliminate || [];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm p-4">
-      <div className="bg-[#e0cdaf] rounded-lg shadow-2xl p-6 max-w-2xl w-full border-4 border-yellow-700 relative overflow-hidden">
-        
-        <div className="absolute top-0 left-0 h-2 bg-green-500" style={{ width: `${timerProgress}%`, transition: 'width 1s linear' }}></div>
+    <div className="fixed inset-0 bg-lacquer-black/90 flex items-center justify-center z-50 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="bg-parchment rounded-md shadow-[0_0_50px_rgba(0,0,0,0.5)] p-8 max-w-3xl w-full border-[8px] border-double border-vn-bronze relative overflow-hidden transform transition-all scale-100">
 
-        <div className="relative text-center">
-            <div className="absolute top-2 right-2 flex items-center gap-3">
-                 <button title={hasFreeEliminate ? `Loại trừ (còn ${currentPlayer.knowledgeFundBuffTurns} lượt miễn phí)` : "Loại trừ hai đáp án sai (200 KP)"} onClick={handleEliminateClick} disabled={!!lifelineStatus.eliminate} className="relative p-3 rounded-full bg-stone-600 hover:bg-stone-500 disabled:bg-stone-400/50 disabled:cursor-not-allowed transition-colors text-white shadow-lg">
-                    {hasFreeEliminate && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-xs font-bold text-black">{currentPlayer.knowledgeFundBuffTurns}</span>}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="#FFD600" stroke="#FF6D00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></polygon></svg>
-                </button>
-                 <button title="Hỏi AI Bot (300 KP)" onClick={handleAiHelpClick} disabled={!!lifelineStatus.ai_help} className="p-3 rounded-full bg-stone-600 hover:bg-stone-500 disabled:bg-stone-400/50 disabled:cursor-not-allowed transition-colors text-white shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#90A4AE" d="M19,6H5A3,3,0,0,0,2,9v6a3,3,0,0,0,3,3h14a3,3,0,0,0,3-3V9A3,3,0,0,0,19,6Z" /><path fill="#CFD8DC" d="M17,8H7a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1H17a1,1,0,0,0,1-1V9A1,1,0,0,0,17,8Z" /><circle fill="#4DD0E1" cx="8.5" cy="11.5" r="1.5" /><circle fill="#4DD0E1" cx="15.5" cy="11.5" r="1.5" /><path fill="#78909C" d="M5,7h2V5A1,1,0,0,0,6,4H4A1,1,0,0,0,3,5V7H5Z" /><path fill="#78909C" d="M19,7h2V5a1,1,0,0,0-1-1H18a1,1,0,0,0-1,1V7h2Z" /><rect fill="#78909C" x="11" y="19" width="2" height="3" rx="0.5" /><rect fill="#78909C" x="4" y="19" width="2" height="3" rx="0.5" /><rect fill="#78909C" x="18" y="19" width="2" height="3" rx="0.5" /></svg>
-                </button>
-                {lifelineStatus.ai_help && (
-                    <div className="absolute top-full right-0 mt-2 w-72 bg-white p-3 rounded-lg shadow-xl z-20 border-2 border-blue-400 text-left">
-                         <button onClick={onCloseAiHelp} className="absolute -top-2 -right-2 text-gray-100 bg-gray-600 rounded-full w-6 h-6 flex items-center justify-center font-bold hover:bg-gray-800">&times;</button>
-                        <p className="font-bold text-sm text-blue-800">🤖 AI Bot nói:</p>
-                        <p className="text-sm text-stone-800 mt-1">
-                            <strong>Đáp án đúng là:</strong> {lifelineStatus.ai_help.answer}
-                        </p>
-                        <p className="text-xs text-gray-600 mt-2 italic">
-                            <strong>Giải thích:</strong> {lifelineStatus.ai_help.explanation}
-                        </p>
-                         <div className="absolute -top-3 right-4 w-0 h-0 border-l-[10px] border-l-transparent border-b-[15px] border-b-white border-r-[10px] border-r-transparent"></div>
-                    </div>
-                )}
-            </div>
-            <h2 className="font-display text-2xl text-red-800 mb-2">
-                {isQuiz ? `BÀI KIỂM TRA ${quizProgressText}` : 'THỬ THÁCH TRI THỨC!'}
-            </h2>
-            <p className="font-mono text-4xl font-bold text-stone-800 mb-4">{timeLeft}s</p>
+        {/* Decorative Corner Ornaments - Vietnamese Style */}
+        <div className="absolute top-0 left-0 w-12 h-12 border-t-[4px] border-l-[4px] border-vn-red opacity-70"></div>
+        <div className="absolute top-0 right-0 w-12 h-12 border-t-[4px] border-r-[4px] border-vn-red opacity-70"></div>
+        <div className="absolute bottom-0 left-0 w-12 h-12 border-b-[4px] border-l-[4px] border-vn-red opacity-70"></div>
+        <div className="absolute bottom-0 right-0 w-12 h-12 border-b-[4px] border-r-[4px] border-vn-red opacity-70"></div>
+
+        {/* Timer Bar - Vietnamese colors */}
+        <div className="absolute top-0 left-0 h-1.5 bg-stone-300 w-full z-10">
+          <div className="h-full bg-gradient-to-r from-vn-red to-vn-gold shadow-[0_0_10px_rgba(196,30,58,0.6)]" style={{ width: `${timerProgress}%`, transition: 'width 1s linear' }}></div>
         </div>
 
-        <div className="bg-white/50 p-4 rounded-md mb-5 min-h-[100px]">
-            <p className="text-xl text-stone-900 font-semibold text-center leading-relaxed">{question.content}</p>
+        {/* Header Section */}
+        <div className="relative text-center mb-8 pt-4">
+          {/* Lifeline Buttons - Absolute Positioned */}
+          <div className="absolute top-2 right-0 flex gap-3 z-20">
+            <button
+              title={hasFreeEliminate ? `Loại trừ (còn ${currentPlayer.knowledgeFundBuffTurns} lượt miễn phí)` : "Loại trừ hai đáp án sai (200 KP)"}
+              onClick={handleEliminateClick}
+              disabled={!!lifelineStatus.eliminate}
+              className="relative p-2.5 rounded-full bg-lacquer-black hover:bg-stone-800 disabled:bg-stone-400 disabled:cursor-not-allowed transition-all text-white shadow-lg border-2 border-vn-bronze hover:border-vn-gold group active:scale-95"
+            >
+              {hasFreeEliminate && <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-vn-red text-[9px] font-bold text-white border border-white shadow-sm animate-bounce">FREE</span>}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="text-vn-gold group-hover:drop-shadow-[0_0_5px_rgba(212,175,55,0.8)]"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor" stroke="none"></polygon></svg>
+            </button>
+            <button
+              title="Hỏi AI Bot (300 KP)"
+              onClick={handleAiHelpClick}
+              disabled={!!lifelineStatus.ai_help}
+              className="relative p-2.5 rounded-full bg-lacquer-black hover:bg-stone-800 disabled:bg-stone-400 disabled:cursor-not-allowed transition-all text-white shadow-lg border-2 border-vn-bronze hover:border-blue-400 group active:scale-95"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="text-blue-300 group-hover:drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]"><path fill="currentColor" d="M19,6H5A3,3,0,0,0,2,9v6a3,3,0,0,0,3,3h14a3,3,0,0,0,3-3V9A3,3,0,0,0,19,6Z" /><circle fill="#22d3ee" cx="8.5" cy="11.5" r="1.5" /><circle fill="#22d3ee" cx="15.5" cy="11.5" r="1.5" /></svg>
+            </button>
+
+            {/* AI Chat Bubble */}
+            {lifelineStatus.ai_help && (
+              <div className="absolute top-12 right-0 w-72 bg-white p-4 z-30 rounded-lg border-l-4 border-vn-gold shadow-2xl skew-y-1">
+                <button onClick={onCloseAiHelp} className="absolute top-1 right-2 text-stone-400 hover:text-vn-red text-lg font-bold">&times;</button>
+                <p className="font-bold text-xs text-vn-bronze uppercase tracking-widest mb-1">🤖 AI Gợi Ý</p>
+                <p className="text-base text-stone-900 leading-snug font-serif">
+                  {lifelineStatus.ai_help.answer}
+                </p>
+                <p className="text-xs text-stone-500 mt-2 italic border-t pt-2 border-stone-200">
+                  {lifelineStatus.ai_help.explanation}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <h2 className="font-display text-4xl text-vn-red mb-2 uppercase tracking-tight drop-shadow-md">
+            {isQuiz ? 'Bài Kiểm Tra' : 'Thử Thách'}
+          </h2>
+          {isQuiz ? (
+            <p className="text-vn-bronze font-bold text-xs tracking-[0.2em] uppercase">Câu hỏi {quizState.currentIndex + 1} / {quizState.questions.length}</p>
+          ) : (
+            <div className="h-px w-24 bg-vn-red mx-auto opacity-30"></div>
+          )}
+
+          <div className={`mt-4 inline-flex items-center justify-center px-6 py-2 rounded-full font-mono text-4xl font-bold border-[3px] shadow-inner transition-colors duration-300 ${timeLeft <= 5 ? 'bg-red-50 text-vn-red border-vn-red animate-pulse' : 'bg-stone-200 text-stone-700 border-vn-bronze'}`}>
+            {timeLeft}<span className="text-sm ml-1 opacity-50 self-end mb-1">s</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Question Box */}
+        <div className="bg-white p-6 md:p-8 rounded-sm mb-8 relative border border-stone-300 shadow-sm mx-2">
+          {/* Folder tab look */}
+          <div className="absolute -top-3 left-4 bg-stone-300 px-4 py-1 rounded-t-md text-[10px] font-bold text-stone-600 uppercase tracking-wider border border-b-0 border-stone-400">
+            Nội dung câu hỏi
+          </div>
+
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] opacity-50 pointer-events-none"></div>
+          <p className="text-xl md:text-3xl text-stone-900 font-serif text-center leading-normal relative z-10 selection:bg-yellow-200">
+            {question.content}
+          </p>
+        </div>
+
+        {/* Answers Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
           {question.answers.map((answer, index) => {
             const isEliminated = eliminatedAnswers.includes(index);
             return (
-              <button key={index} onClick={() => handleAnswerClick(index)} disabled={isEliminated} className={`w-full text-stone-800 font-bold py-4 px-5 rounded-lg shadow-md transition-all duration-300 transform text-left border-b-4 disabled:cursor-not-allowed bg-stone-50 hover:bg-yellow-100 border-stone-300 ${isEliminated ? 'opacity-30 !bg-stone-400 line-through' : ''}`}>
-                <span className="text-lg">{answer.content}</span>
+              <button
+                key={index}
+                onClick={() => handleAnswerClick(index)}
+                disabled={isEliminated}
+                className={`
+                    w-full py-5 px-6 rounded-lg transition-all duration-200 text-left border-l-4 relative overflow-hidden group
+                    shadow-[0_2px_5px_rgba(0,0,0,0.1)] active:shadow-none active:translate-y-[2px]
+                    ${isEliminated
+                    ? 'opacity-40 bg-stone-300 border-vn-bronze cursor-not-allowed'
+                    : 'bg-white hover:bg-stone-50 border-vn-bronze hover:border-vn-red'
+                  }
+                `}
+              >
+                {/* Numbering Circle */}
+                <div className={`
+                    absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-sm transition-colors
+                    ${isEliminated ? 'border-vn-bronze text-vn-bronze' : 'border-vn-bronze text-vn-bronze group-hover:border-vn-red group-hover:text-vn-red'}
+                `}>
+                  {String.fromCharCode(65 + index)}
+                </div>
+
+                {isEliminated && <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-30 transform rotate-12 bg-vn-red text-white font-black text-xs px-2 py-0.5 rounded shadow-sm">LOẠI</div>}
+
+                <span className={`text-lg block pl-10 ${isEliminated ? 'text-stone-400 line-through decoration-2 decoration-vn-red' : 'text-stone-800 font-medium'}`}>
+                  {answer.content}
+                </span>
+
+                {/* Hover Indicator */}
+                {!isEliminated && <div className="absolute right-0 top-0 bottom-0 w-1 bg-vn-red transform scale-y-0 group-hover:scale-y-100 transition-transform origin-bottom"></div>}
               </button>
             )
           })}
         </div>
 
         {isQuiz && quizState.currentIndex >= quizState.questions.length && (
-            <div className="text-center mt-4">
-                <p className="font-bold text-xl text-yellow-200">
-                    Đã hoàn thành bài kiểm tra!
-                </p>
+          <div className="absolute inset-0 bg-stone-900/95 flex items-center justify-center z-50 animate-fade-in">
+            <div className="bg-parchment p-10 rounded-sm border-[4px] border-double border-wood-light text-center shadow-2xl max-w-sm">
+              <div className="text-6xl mb-4 animate-bounce">🏁</div>
+              <p className="font-display text-2xl text-stone-800 mb-2 font-bold uppercase tracking-widest">Hoàn Thành!</p>
+              <p className="text-stone-600 italic">Hệ thống đang tổng kết điểm số...</p>
             </div>
+          </div>
         )}
       </div>
     </div>

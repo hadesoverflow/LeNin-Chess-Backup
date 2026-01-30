@@ -30,7 +30,7 @@ const Dice: React.FC<{ value: number; isRolling: boolean }> = ({ value, isRollin
         let dots = [];
         switch (faceValue) {
             case 1:
-                dots = [ <div key="c" style={{ gridArea: '2 / 2' }}><Dot /></div> ];
+                dots = [<div key="c" style={{ gridArea: '2 / 2' }}><Dot /></div>];
                 break;
             case 2:
                 dots = [
@@ -121,35 +121,79 @@ const Dice: React.FC<{ value: number; isRolling: boolean }> = ({ value, isRollin
 
 
 const ControlPanel: React.FC<ControlPanelProps> = ({ currentPlayer, onRollDice, dice, canRoll, isRolling }) => {
-    
+
     return (
-        <div className="w-full max-w-xs text-center flex flex-col items-center justify-around h-full p-4">
-            <h1 className="font-display text-4xl text-yellow-300" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.7)' }}>
-                Lênin Chess
-            </h1>
-            
-            <div className="flex flex-col items-center my-2">
-                 <h3 className="text-xl font-semibold mb-2 text-white" style={{textShadow: '0 1px 3px #000'}}>
-                    Lượt của: <span style={{ color: currentPlayer.color, textShadow: `0 1px 3px ${currentPlayer.color}` }}>{currentPlayer.name}</span>
-                </h3>
-                <Dice value={dice} isRolling={isRolling} />
-                <div className="h-8 flex items-center">
-                   {!isRolling && !canRoll && (
-                        <p className="text-white text-lg font-bold mt-2 animate-kp-feedback [animation:kp-feedback_2s_ease-out_forwards_reverse]">
-                            Kết quả: {dice}
-                        </p>
-                    )}
+        <div className="w-full h-full flex flex-col items-center justify-between py-6 px-4 relative z-20 pointer-events-none">
+            {/* Pointer events set to none for container so clicks pass through to board if needed, 
+                but children need pointer-events-auto */}
+
+            {/* Top: Player Info Banner - Vietnamese Scroll Style */}
+            <div className="pointer-events-auto relative mt-4">
+                <div className="absolute inset-0 bg-vn-red transform -skew-x-12 shadow-lg border-2 border-vn-gold opacity-95"></div>
+                <div className="relative px-8 py-3 text-center min-w-[200px]">
+                    <div className="text-[10px] font-bold text-vn-gold uppercase tracking-widest mb-0.5 opacity-90">
+                        Lượt Hiện Tại
+                    </div>
+                    <div className="font-display font-bold text-2xl uppercase text-white drop-shadow-md tracking-wider">
+                        {currentPlayer.name}
+                    </div>
                 </div>
+                {/* Decorative elements - Vietnamese style */}
+                <div className="absolute top-1/2 -left-3 -translate-y-1/2 text-vn-gold text-lg drop-shadow-md">◆</div>
+                <div className="absolute top-1/2 -right-3 -translate-y-1/2 text-vn-gold text-lg drop-shadow-md">◆</div>
             </div>
 
-            <div className="w-full px-4">
+            {/* Center: Dice (Floating) */}
+            <div className="pointer-events-auto relative -mt-4 group perspective-container">
+                {/* Dice platform/glow - Vietnamese gold */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-vn-gold/20 rounded-full blur-2xl animate-pulse"></div>
+
+                <div className="transform scale-150 transition-transform duration-300 group-hover:scale-[1.6]">
+                    <Dice value={dice} isRolling={isRolling} />
+                </div>
+
+                {/* Result display just below dice */}
+                {!isRolling && !canRoll && (
+                    <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-max text-center animate-kp-feedback">
+                        <span className="bg-lacquer-black/90 text-vn-gold border border-vn-gold px-4 py-1.5 rounded-full text-xl font-bold font-mono shadow-lg block backdrop-blur-sm">
+                            Kết quả: {dice}
+                        </span>
+                    </div>
+                )}
+            </div>
+
+            {/* Bottom: Action Button */}
+            <div className="pointer-events-auto w-full max-w-[220px] mb-4">
                 <button
                     onClick={onRollDice}
                     disabled={!canRoll || isRolling}
-                    className="w-full text-yellow-200 font-bold py-3 px-4 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 disabled:cursor-not-allowed disabled:transform-none bg-red-800 hover:bg-red-700 disabled:bg-gray-600 border-2 border-red-900 hover:border-red-800"
-                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
+                    className={`
+                        w-full py-4 text-xl font-display font-bold uppercase tracking-widest relative overflow-hidden transition-all duration-300 group
+                        bg-gradient-to-b from-vn-red to-red-900 
+                        border-2 border-vn-gold shadow-[0_6px_0_#4a1a1a] hover:shadow-[0_3px_0_#4a1a1a] hover:translate-y-[3px] active:shadow-none active:translate-y-[6px]
+                        rounded-lg
+                        ${!canRoll ? 'grayscale opacity-70 cursor-not-allowed shadow-none translate-y-[6px]' : 'hover:brightness-110'}
+                    `}
+                    style={{
+                        textShadow: '0 2px 0 rgba(0,0,0,0.5)'
+                    }}
                 >
-                    {isRolling ? 'Đang gieo...' : 'Gieo Xúc Xắc'}
+                    {/* Button inner texture */}
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/noise.png')] opacity-20"></div>
+
+                    <span className="relative z-10 text-white group-hover:text-yellow-100 flex items-center justify-center gap-2">
+                        {isRolling ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Đang Gieo...</span>
+                            </>
+                        ) : (
+                            'Gieo Xúc Xắc'
+                        )}
+                    </span>
                 </button>
             </div>
         </div>

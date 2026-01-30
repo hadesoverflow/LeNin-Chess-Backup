@@ -5,10 +5,10 @@ export const PLAYER_STARTING_KP = 1500;
 export const PLAYER_ELIMINATION_THRESHOLD = -2000;
 
 export const CHARACTERS_LIST = [
-  { name: "Dinosaur",     img: "characters/Dinosaur.png" },
-  { name: "Zenmarx",      img: "characters/Zenmarx.png" },
+  { name: "Dinosaur", img: "characters/Dinosaur.png" },
+  { name: "Zenmarx", img: "characters/Zenmarx.png" },
   { name: "Comrad Bunny", img: "characters/ComradBunny.png" },
-  { name: "Marxwell",     img: "characters/Marxwell.png" },
+  { name: "Marxwell", img: "characters/Marxwell.png" },
 ];
 
 export const CARDS_INFO: { [key in CardType]: Omit<Card, 'id'> & { icon: string } } = {
@@ -41,50 +41,50 @@ export const CARD_COSTS: { [key in CardType]: number } = {
 
 export const TILES: TileData[] = [
   // Cạnh dưới
-  { id: 1, name: "Bến Khởi Hành Cách Mạng Tri Thức 🚩", group: "Đặc Biệt", type: 'start', description: "Mỗi khi đi qua đây, bạn được tiếp thêm 200 KP (Điểm tri thức) để củng cố lập trường trên hành trình cách mạng." },
-  { id: 2, name: "Diễn đàn Lý luận Mở 🌟", group: "Thưởng", type: 'reward', description: "Luận điểm của bạn được hoan nghênh! Có cơ hội nhận KP thưởng hoặc tiến nhanh hơn trên con đường tri thức." },
-  { id: 3, name: "Sai lầm Tả khuynh 📉", group: "Phạt", type: 'penalty', description: "Tư tưởng quá nóng vội khiến bạn vấp ngã. Có thể bị trừ KP hoặc lùi lại vài bước để suy ngẫm." },
-  { id: 4, name: "Nhà sách Chân Lý 📚", group: "Mua Thẻ", type: 'buy_card', description: "Đầu tư vào tri thức để bảo vệ thành quả. Trả lời đúng để có cơ hội mua một trong các thẻ đặc biệt." },
-  { id: 5, name: "Phát kiến Bất ngờ ✨", group: "Thưởng", type: 'reward', description: "Một ý tưởng đột phá loé lên! Bạn có thể được thưởng KP hoặc được đẩy về phía trước." },
-  { id: 6, name: "Hội thảo Quốc tế 🤝", group: "Cơ Hội", type: 'opportunity', description: "Cơ hội liên minh với một nhà lý luận khác. Hãy chọn một người để 'kết nối tư tưởng' cho lượt tiếp theo của họ!" },
-  { id: 7, name: "Phê bình Trực diện ⚔️", group: "Tấn Công", type: 'attack', description: "Dùng lý luận sắc bén của bạn để chỉ ra sai lầm của đối thủ. Chọn một người chơi để họ phải lùi lại 5 ô." },
-  { id: 8, name: "Chủ nghĩa Giáo điều 🧱", group: "Phạt", type: 'penalty', description: "Sự cứng nhắc trong tư duy kìm hãm bạn. Có nguy cơ mất KP hoặc bị đẩy lùi." },
-  { id: 9, name: "Đầu tư vào Tương lai 🏦", group: "Đầu Tư", type: 'investment', description: "Mạo hiểm để bứt phá! Đặt cược KP và trả lời một câu hỏi. Đúng nhân đôi, sai mất gấp đôi tiền cược." },
-  { id: 10, name: "Luận điểm Sắc sảo 💡", group: "Thưởng", type: 'reward', description: "Lập luận của bạn không thể bị bác bỏ. Nhận thưởng KP hoặc tiến thêm vài bước." },
-  
+  { id: 1, name: "Khởi Động Hành Trình Di Sản 🚩", group: "Đặc Biệt", type: 'start', description: "Bắt đầu hành trình bảo tồn. Bạn được nhận 200 KP để đầu tư cho các dự án văn hóa." },
+  { id: 2, name: "Lễ Hội Cồng Chiêng 🥁", group: "Thưởng", type: 'reward', description: "Tham gia lễ hội văn hóa đặc sắc. Bạn được cộng điểm uy tín hoặc KP thưởng." },
+  { id: 3, name: "Mai Một Ngôn Ngữ 📉", group: "Phạt", type: 'penalty', description: "Ngôn ngữ truyền thống đang dần mất đi. Bạn bị trừ KP do chưa nỗ lực bảo tồn.." },
+  { id: 4, name: "Trung Tâm Bảo Tồn 🏛️", group: "Mua Thẻ", type: 'buy_card', description: "Ghé thăm trung tâm lưu giữ di sản. Trả lời đúng để mua vật phẩm hỗ trợ." },
+  { id: 5, name: "Phục Dựng Lễ Hội ✨", group: "Thưởng", type: 'reward', description: "Một lễ hội cổ truyền được phục dựng thành công. Nhận phần thưởng xứng đáng." },
+  { id: 6, name: "Giao Lưu Văn Hóa 🤝", group: "Cơ Hội", type: 'opportunity', description: "Học hỏi từ các dân tộc anh em. Chọn một người để 'kết nối' cho lượt tiếp theo của họ!" },
+  { id: 7, name: "Xâm Hại Di Sản ⚔️", group: "Tấn Công", type: 'attack', description: "Lên án hành động xâm hại di sản. Chọn một người chơi để họ phải lùi lại 5 ô hối lỗi." },
+  { id: 8, name: "Thương Mại Hóa Quá Mức 🧱", group: "Phạt", type: 'penalty', description: "Biến di sản thành hàng hóa thô thiển. Bạn bị phạt KP hoặc lùi bước để chấn chỉnh." },
+  { id: 9, name: "Đầu Tư Du Lịch Cộng Đồng 🏡", group: "Đầu Tư", type: 'investment', description: "Phát triển du lịch bền vững. Đặt cược KP, đúng nhân đôi lợi nhuận, sai mất vốn." },
+  { id: 10, name: "Truyền Dạy Nghề Thủ Công 🧵", group: "Thưởng", type: 'reward', description: "Nghệ nhân truyền nghề cho thế hệ trẻ. Nhận thưởng KP hoặc tiến thêm." },
+
   // Cạnh trái
-  { id: 11, name: "Phòng Thi Giữa Kỳ 📝", group: "Đặc Biệt", type: 'midterm_exam', description: "Kiểm tra kiến thức giữa chặng đường. Trả lời 10 câu hỏi, đúng ít nhất 7 câu để nhận 300 KP, nếu không sẽ bị trừ 200 KP." },
-  { id: 12, name: "Cược vào Chân lý ⚖️", group: "Đầu Tư", type: 'investment', description: "Chân lý thuộc về ai? Đặt cược KP và trả lời một câu hỏi để chứng minh. Đúng x2, sai mất x2." },
-  { id: 13, name: "Lập trường Lung lay 🌪️", group: "Phạt", type: 'penalty', description: "Bạn bị ảnh hưởng bởi tư tưởng sai lệch. Nguy cơ mất KP hoặc phải lùi lại." },
-  { id: 14, name: "Cảm hứng Bất chợt 💥", group: "Thưởng", type: 'reward', description: "Nguồn cảm hứng dồi dào giúp bạn tiến xa. Có thể được cộng KP hoặc tiến nhanh hơn." },
-  { id: 15, name: "Cửa hàng Tri thức 🛡️", group: "Mua Thẻ", type: 'buy_card', description: "Trang bị lá chắn để bảo vệ luận điểm. Trả lời đúng để có cơ hội mua một trong các thẻ đặc biệt." },
-  { id: 16, name: "Đối thoại Học thuật 💬", group: "Cơ Hội", type: 'opportunity', description: "Thách thức và hợp tác! Chọn một người chơi để 'liên kết số phận' cho lượt tiếp theo của họ." },
-  { id: 17, name: "Vận dụng Sáng tạo 🚀", group: "Thưởng", type: 'reward', description: "Áp dụng lý luận vào thực tiễn thành công. Nhận phần thưởng xứng đáng là KP hoặc một cú hích về phía trước." },
-  { id: 18, name: "Quỹ Khuyến học C.Mác 💰", group: "Quỹ Tri Thức", type: 'knowledge_fund', description: "Bạn nhận được tài trợ từ quỹ khuyến học. Nhận buff loại bỏ đáp án sai miễn phí trong 2 lượt tới." },
-  { id: 19, name: "Chủ nghĩa Kinh nghiệm 📉", group: "Phạt", type: 'penalty', description: "Chỉ tin vào kinh nghiệm mà bỏ qua lý luận khiến bạn thụt lùi. Cẩn thận mất KP hoặc phải đi lùi." },
-  { id: 20, name: "Tổng kết Thực tiễn 📈", group: "Thưởng", type: 'reward', description: "Rút ra bài học từ thực tiễn. Phần thưởng là KP hoặc một bước tiến dài." },
-  
+  { id: 11, name: "Kiểm Kê Di Sản (Đợt 1) 📝", group: "Đặc Biệt", type: 'midterm_exam', description: "Đánh giá công tác bảo tồn. Trả lời 10 câu, đúng >=7 nhận 300 KP, sai bị phạt 200 KP." },
+  { id: 12, name: "Quảng Bá Di Sản 📺", group: "Đầu Tư", type: 'investment', description: "Đầu tư chiến dịch quảng bá văn hóa. Đặt cược KP, thành công vang dội (x2) hoặc thất bại (mất)." },
+  { id: 13, name: "Lãng Quên Phong Tục 🌪️", group: "Phạt", type: 'penalty', description: "Một phong tục đẹp bị lãng quên. Bạn mất KP hoặc phải lùi lại tìm về nguồn cội." },
+  { id: 14, name: "Khám Phá Bản Sắc 🔍", group: "Thưởng", type: 'reward', description: "Tìm thấy nét đẹp văn hóa tiềm ẩn. Phần thưởng là KP hoặc bước tiến mới." },
+  { id: 15, name: "Bảo Tàng Dân Tộc Học 🏺", group: "Mua Thẻ", type: 'buy_card', description: "Nơi lưu giữ ký ức văn hóa. Trả lời đúng để có cơ hội mua thẻ bảo vệ." },
+  { id: 16, name: "Hợp Tác Quốc Tế 🌐", group: "Cơ Hội", type: 'opportunity', description: "Quốc tế hỗ trợ bảo tồn. Chọn một người chơi để cùng chia sẻ cơ hội hoặc rủi ro." },
+  { id: 17, name: "Sáng Tạo Trên Nền Tảng Cũ 🎨", group: "Thưởng", type: 'reward', description: "Kết hợp truyền thống và hiện đại. Nhận phần thưởng KP hoặc tiến về phía trước." },
+  { id: 18, name: "Quỹ Hỗ Trợ Nghệ Nhân 💰", group: "Quỹ Tri Thức", type: 'knowledge_fund', description: "Nhận tài trợ để hỗ trợ nghệ nhân. Nhận buff loại bỏ đáp án sai trong 2 lượt tới." },
+  { id: 19, name: "Mất Gốc Văn Hóa 📉", group: "Phạt", type: 'penalty', description: "Sống tách biệt với cội nguồn. Cảnh báo mất KP hoặc phải lùi bước." },
+  { id: 20, name: "Vinh Danh Nghệ Nhân Ưu Tú 🎖️", group: "Thưởng", type: 'reward', description: "Tôn vinh những người giữ lửa. Nhận thưởng KP." },
+
   // Cạnh trên
-  { id: 21, name: "Phòng Thi Cuối Kỳ 📄", group: "Đặc Biệt", type: 'final_exam', description: "Bài kiểm tra quyết định! Trả lời 15 câu hỏi, đúng ít nhất 7 câu để nhận 500 KP, nếu không sẽ bị trừ 300 KP." },
-  { id: 22, name: "Tư duy Siêu hình 🧊", group: "Phạt", type: 'penalty', description: "Cái nhìn phiến diện khiến bạn trả giá. Có thể bị trừ KP hoặc lùi bước." },
-  { id: 23, name: "Liên minh Tư tưởng 🔗", group: "Cơ Hội", type: 'opportunity', description: "Đồng hành cùng một người bạn trên con đường chân lý! Chọn một người chơi để chia sẻ thành quả hoặc rủi ro trong lượt tới của họ." },
-  { id: 24, name: "Tranh Luận Sai Lầm 💥", group: "Tấn Công", type: 'attack', description: "Dùng lý luận sắc bén của bạn để chỉ ra sai lầm của đối thủ. Chọn một người chơi để họ phải lùi lại 5 ô." },
-  { id: 25, name: "Cửa hàng Sáng tạo 🌠", group: "Mua Thẻ", type: 'buy_card', description: "Kích hoạt tiềm năng của bạn! Trả lời đúng để có cơ hội mua một trong các thẻ đặc biệt." },
-  { id: 26, name: "Vinh Danh: Nhà Lý Luận Trẻ 🏆", group: "Thưởng", type: 'reward', description: "Nỗ lực của bạn được ghi nhận! Nhận một phần thưởng KP ngẫu nhiên hoặc tiến về phía trước." },
-  { id: 27, name: "Bảo thủ Trì trệ 🐌", group: "Phạt", type: 'penalty', description: "Từ chối tiếp thu cái mới khiến bạn tụt hậu. Có thể mất KP hoặc phải lùi lại." },
-  { id: 28, name: "Đầu tư vào Biện chứng 💹", group: "Đầu Tư", type: 'investment', description: "Liệu bạn có nắm vững quy luật? Đặt cược KP và trả lời câu hỏi. Đúng x2, sai mất x2." },
-  { id: 29, name: "Kế thừa Tinh hoa 📜", group: "Thưởng", type: 'reward', description: "Bạn đã kế thừa xuất sắc di sản của các nhà tư tưởng đi trước. Nhận thưởng KP hoặc tiến về phía trước." },
-  { id: 30, name: "Thách thức Tư duy 🎲", group: "Đầu Tư", type: 'investment', description: "Bạn có dám cược vào trí tuệ của mình? Đặt cược KP, trả lời câu hỏi và nhận phần thưởng gấp đôi hoặc mất tất cả." },
+  { id: 21, name: "Đại Hội Bảo Tồn Di Sản 📄", group: "Đặc Biệt", type: 'final_exam', description: "Kỳ sát hạch kiến thức văn hóa toàn diện. Trả lời 15 câu, đúng >=7 nhận 500 KP, sai phạt 300 KP." },
+  { id: 22, name: "Đồng Hóa Văn Hóa 🧊", group: "Phạt", type: 'penalty', description: "Bị hòa tan trong hội nhập. Mất bản sắc riêng, bị trừ KP hoặc lùi lại." },
+  { id: 23, name: "Liên Kết Vùng Miền 🔗", group: "Cơ Hội", type: 'opportunity', description: "Các dân tộc đoàn kết cùng phát triển. Chọn một người bạn đồng hành cho lượt tới." },
+  { id: 24, name: "Tranh Chấp Bản Quyền 💥", group: "Tấn Công", type: 'attack', description: "Bảo vệ quyền sở hữu trí tuệ văn hóa. Chọn một đối thủ vi phạm để phạt lùi 5 ô." },
+  { id: 25, name: "Triển Lãm Văn Hóa 🖼️", group: "Mua Thẻ", type: 'buy_card', description: "Giới thiệu văn hóa ra thế giới. Trả lời đúng để mua thẻ đặc biệt." },
+  { id: 26, name: "Di Sản Thế Giới UNESCO 🏆", group: "Thưởng", type: 'reward', description: "Được công nhận là di sản thế giới. Nhận phần thưởng lớn về KP." },
+  { id: 27, name: "Phá Vỡ Cảnh Quan 🚧", group: "Phạt", type: 'penalty', description: "Xây dựng trái phép làm hỏng cảnh quan di sản. Bị phạt nặng về KP." },
+  { id: 28, name: "Đầu Tư Số Hóa Di Sản 💻", group: "Đầu Tư", type: 'investment', description: "Ứng dụng công nghệ vào bảo tồn. Đặt cược KP, thành công (x2) hoặc thất bại (mất)." },
+  { id: 29, name: "Giữ Gìn Tiếng Nói Chữ Viết ✍️", group: "Thưởng", type: 'reward', description: "Bảo tồn thành công ngôn ngữ mẹ đẻ. Nhận thưởng KP xứng đáng." },
+  { id: 30, name: "Thử Thách Hội Nhập 🎲", group: "Đầu Tư", type: 'investment', description: "Hội nhập nhưng không hòa tan. Đặt cược bản lĩnh (KP) để nhận phần thưởng gấp đôi." },
 
   // Cạnh phải
-  { id: 31, name: "Nhà Tù Nô Lệ Học 🏚️", group: "Đặc Biệt", type: 'prison', description: "Tư duy của bạn mắc kẹt trong những định kiến cũ. Phải trả lời 30 câu hỏi để được 'giải phóng' và quay về Bến Khởi Hành."},
-  { id: 32, name: "Mở rộng Tầm nhìn 🔭", group: "Thưởng", type: 'reward', description: "Tiếp thu tri thức mới giúp bạn đi nhanh hơn. Thưởng KP hoặc tiến thêm vài bước." },
-  { id: 33, name: "Cạm bẫy Ngụy biện 🕸️", group: "Phạt", type: 'penalty', description: "Bạn đã rơi vào một lỗi logic. Sai lầm này có thể khiến bạn mất KP hoặc lùi lại." },
-  { id: 34, name: "Tài trợ của Ph.Ăng-ghen 🎁", group: "Quỹ Tri Thức", type: 'knowledge_fund', description: "Một món quà từ nhà hảo tâm! Bạn được sử dụng quyền trợ giúp 50/50 miễn phí trong 2 lượt tới." },
-  { id: 35, name: "Cửa hàng Lý luận 🛡️", group: "Mua Thẻ", type: 'buy_card', description: "Gia tăng sức mạnh lý luận. Trả lời đúng để có cơ hội mua một trong các thẻ đặc biệt." },
-  { id: 36, name: "Giao lưu Quốc tế 🌐", group: "Cơ Hội", type: 'opportunity', description: "Học hỏi từ bạn bè năm châu. Chọn một người để 'kết nối tư tưởng' cho lượt tiếp theo của họ." },
-  { id: 37, name: "Tranh Luận Nảy Lửa 🔥", group: "Tấn Công", type: 'attack', description: "Dùng lý luận sắc bén của bạn để chỉ ra sai lầm của đối thủ. Chọn một người chơi để họ phải lùi lại 5 ô." },
-  { id: 38, name: "Góc nhìn Đột phá 💎", group: "Thưởng", type: 'reward', description: "Bạn tìm ra một hướng đi mới cho lý luận. Nhận thưởng KP hoặc một bước tiến vượt bậc." },
-  { id: 39, name: "Cửa hàng Đột phá 🚀", group: "Mua Thẻ", type: 'buy_card', description: "Tạo ra bước ngoặt! Trả lời đúng để có cơ hội mua một trong các thẻ đặc biệt."},
-  { id: 40, name: "Cược Tri Thức 🏦", group: "Đầu Tư", type: 'investment', description: "Bạn có dám cược vào trí tuệ của mình? Đặt cược KP, trả lời câu hỏi và nhận phần thưởng gấp đôi hoặc mất tất cả." }
+  { id: 31, name: "Vùng Lãng Quên 🌫️", group: "Đặc Biệt", type: 'prison', description: "Nơi văn hóa bị lãng quên. Phải trả lời 30 câu hỏi để khôi phục ký ức và quay lại hành trình." },
+  { id: 32, name: "Tự Hào Dân Tộc 🇻🇳", group: "Thưởng", type: 'reward', description: "Niềm tự hào lan tỏa sức mạnh. Thưởng KP hoặc tiến thêm bước dài." },
+  { id: 33, name: "Lai Căng Văn Hóa 🎭", group: "Phạt", type: 'penalty', description: "Tiếp thu thiếu chọn lọc gây phản cảm. Bị trừ KP để chấn chỉnh." },
+  { id: 34, name: "Quỹ Phát Triển Văn Hóa 🎁", group: "Quỹ Tri Thức", type: 'knowledge_fund', description: "Nhận tài trợ cho dự án văn hóa. Được quyền trợ giúp 50/50 miễn phí 2 lượt." },
+  { id: 35, name: "Không Gian Văn Hóa 🎋", group: "Mua Thẻ", type: 'buy_card', description: "Xây dựng không gian sinh hoạt cộng đồng. Trả lời đúng để mua thẻ." },
+  { id: 36, name: "Giao Lưu Cồng Chiêng 🔔", group: "Cơ Hội", type: 'opportunity', description: "Tiếng cồng chiêng vang vọng núi rừng. Chọn người cùng tham gia lễ hội lượt tới." },
+  { id: 37, name: "Xâm Lấn Đất Đai 🚧", group: "Tấn Công", type: 'attack', description: "Đất văn hóa bị xâm lấn trái phép. Chọn đối thủ vi phạm để phạt lùi 5 ô." },
+  { id: 38, name: "Sáng Kiếm Bảo Tồn 💎", group: "Thưởng", type: 'reward', description: "Đề xuất giải pháp bảo tồn thông minh. Nhận thưởng KP." },
+  { id: 39, name: "Trung Tâm Nghiên Cứu 🔬", group: "Mua Thẻ", type: 'buy_card', description: "Nghiên cứu sâu sắc về văn hóa. Trả lời đúng để mua thẻ tri thức." },
+  { id: 40, name: "Cược Bản Sắc 🏛️", group: "Đầu Tư", type: 'investment', description: "Khẳng định bản sắc trong thời đại mới. Đặt cược KP nếu tự tin, x2 hoặc mất tất cả." }
 ];

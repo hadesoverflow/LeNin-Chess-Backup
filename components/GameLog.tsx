@@ -1,45 +1,41 @@
 import React, { useRef, useEffect } from 'react';
 
 interface GameLogProps {
-    log: {turn: number, message: string, id: number}[];
+    log: { turn: number, message: string, id: number, timestamp?: string }[];
     onClearLog: () => void;
 }
 
 const GameLog: React.FC<GameLogProps> = ({ log, onClearLog }) => {
-    const scrollableContainerRef = useRef<HTMLDivElement>(null);
+    const logEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const container = scrollableContainerRef.current;
-        if (container) {
-            container.scrollTop = container.scrollHeight;
-        }
+        logEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [log]);
 
     return (
-        <div className="bg-[#e0cdaf]/80 p-4 rounded-lg shadow-lg border-2 border-yellow-700/60 backdrop-blur-sm h-full flex flex-col">
-            <div className="flex justify-between items-center mb-3 border-b-2 border-yellow-700/60 pb-2">
-                <h2 className="font-display text-3xl text-[#8B4513]" style={{ textShadow: '1px 1px #fdf6e3' }}>
-                    Nhật Ký Cách Mạng
-                </h2>
+        <div className="glass-panel p-4 h-[300px] flex flex-col border border-stone-600/50 bg-[#1c1917]/80">
+            <div className="flex justify-between items-center mb-2 pb-2 border-b border-stone-700">
+                <h3 className="font-display font-bold text-stone-200 tracking-wider">Nhật Ký Hành Trình</h3>
                 <button
                     onClick={onClearLog}
-                    className="text-sm bg-gray-600 text-white font-bold py-1 px-3 rounded-lg shadow hover:bg-gray-700 transition-all transform hover:scale-105"
-                    aria-label="Xóa nhật ký"
+                    className="text-xs text-stone-400 hover:text-red-400 hover:underline transition-colors"
                 >
-                    Xóa
+                    Xóa nhật ký
                 </button>
             </div>
-            <div ref={scrollableContainerRef} className="flex-grow overflow-y-auto pr-2 font-mono text-stone-700">
-                <ul className="space-y-2 text-sm">
-                    {log.map((entry, index) => {
-                       const isTurnMarker = entry.message.startsWith('---');
-                       return (
-                         <li key={entry.id} className={`transition-opacity duration-500 ${isTurnMarker ? 'font-bold text-red-700 pt-2' : ''}`}>
-                             {entry.message.replace(/--- \[Lượt \d+\] |---/g, '')}
-                         </li>
-                       )
-                    })}
-                </ul>
+
+            <div className="flex-grow overflow-y-auto pr-2 font-mono text-sm space-y-2 custom-scrollbar">
+                {log.length === 0 ? (
+                    <p className="text-stone-600 italic text-center mt-10">Chưa có sự kiện nào...</p>
+                ) : (
+                    log.map((entry, index) => (
+                        <div key={index} className="text-stone-300 border-b border-stone-800/50 pb-1 last:border-0 animate-pulse-glow">
+                            {entry.timestamp && <span className="text-stone-500 text-[10px] mr-2">[{entry.timestamp}]</span>}
+                            <span dangerouslySetInnerHTML={{ __html: entry.message }} />
+                        </div>
+                    ))
+                )}
+                <div ref={logEndRef} />
             </div>
         </div>
     );

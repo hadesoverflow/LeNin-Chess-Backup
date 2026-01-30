@@ -35,57 +35,57 @@ const getTileOrientation = (id: number): TileOrientation => {
 
 const GameBoard = React.forwardRef<HTMLDivElement, GameBoardProps>(
   ({ children, highlightedTile, players, tilePositions, currentPlayerId, onTileClick, attackAnimation }, ref) => {
-    
-    const animatedPlayers = React.useMemo(() => {
-        if (!attackAnimation || Object.keys(tilePositions).length === 0) {
-            return players;
-        }
-        
-        const { stage, attackerId, targetId, attackerOriginalPosition } = attackAnimation;
-        const targetPlayer = players.find(p => p.id === targetId);
 
-        if (stage === 'moving_to_target' || stage === 'impacting') {
-            return players.map(p => {
-                if (p.id === attackerId && targetPlayer) {
-                    // Temporarily move attacker to target's position
-                    return { ...p, position: targetPlayer.position };
-                }
-                return p;
-            });
-        }
-       
-        if (stage === 'attacker_returning') {
-            return players.map(p => {
-                if (p.id === attackerId) {
-                    // Temporarily move attacker back to original position for the animation
-                    return { ...p, position: attackerOriginalPosition };
-                }
-                return p;
-            });
-        }
-        
+    const animatedPlayers = React.useMemo(() => {
+      if (!attackAnimation || Object.keys(tilePositions).length === 0) {
         return players;
+      }
+
+      const { stage, attackerId, targetId, attackerOriginalPosition } = attackAnimation;
+      const targetPlayer = players.find(p => p.id === targetId);
+
+      if (stage === 'moving_to_target' || stage === 'impacting') {
+        return players.map(p => {
+          if (p.id === attackerId && targetPlayer) {
+            // Temporarily move attacker to target's position
+            return { ...p, position: targetPlayer.position };
+          }
+          return p;
+        });
+      }
+
+      if (stage === 'attacker_returning') {
+        return players.map(p => {
+          if (p.id === attackerId) {
+            // Temporarily move attacker back to original position for the animation
+            return { ...p, position: attackerOriginalPosition };
+          }
+          return p;
+        });
+      }
+
+      return players;
 
     }, [players, attackAnimation, tilePositions]);
 
     const activePlayers = React.useMemo(() => animatedPlayers.filter(p => !p.isEliminated), [animatedPlayers]);
 
     const playersByPosition = React.useMemo(() => {
-        const groups: { [key: number]: Player[] } = {};
-        activePlayers.forEach(p => {
-            if (!groups[p.position]) {
-                groups[p.position] = [];
-            }
-            groups[p.position].push(p);
-        });
-        return groups;
+      const groups: { [key: number]: Player[] } = {};
+      activePlayers.forEach(p => {
+        if (!groups[p.position]) {
+          groups[p.position] = [];
+        }
+        groups[p.position].push(p);
+      });
+      return groups;
     }, [activePlayers]);
 
     const styleVars: React.CSSProperties = {
       ['--gap' as any]: '2px',
       ['--pad' as any]: '8px',
       ['--border' as any]: '4px',
-      ['--boardH' as any]: 'min(95vw, 92vh, 1100px)',
+      ['--boardH' as any]: 'min(98vw, 98vh, 1400px)',
       // Kích thước board vuông, chiều rộng bằng chiều cao
       width: 'var(--boardH)',
       height: 'var(--boardH)',
@@ -102,85 +102,119 @@ const GameBoard = React.forwardRef<HTMLDivElement, GameBoardProps>(
         className="
           relative
           grid
-          bg-[#2d1e10]
-          rounded-lg shadow-2xl
-          border-4 border-[#5d4022]
+          bg-wood-dark
+          rounded-xl shadow-2xl
+          border-[16px] border-wood-light
           transform-gpu
           mx-auto
+          overflow-hidden
         "
         style={{
           ...styleVars,
           padding: 'var(--pad)',
           gap: 'var(--gap)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 0 100px rgba(0,0,0,0.5)',
+          backgroundImage: "url('https://www.transparenttextures.com/patterns/wood-pattern.png')"
         }}
       >
+        {/* Decorative Corner Ornaments - Vietnamese Style */}
+        <div className="absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-vn-gold rounded-tl-xl pointer-events-none z-20 opacity-70"></div>
+        <div className="absolute top-0 right-0 w-20 h-20 border-t-4 border-r-4 border-vn-gold rounded-tr-xl pointer-events-none z-20 opacity-70"></div>
+        <div className="absolute bottom-0 left-0 w-20 h-20 border-b-4 border-l-4 border-vn-gold rounded-bl-xl pointer-events-none z-20 opacity-70"></div>
+        <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-vn-gold rounded-br-xl pointer-events-none z-20 opacity-70"></div>
+
         {TILES.map((tile) => {
           const pos = TILE_POSITIONS[tile.id];
           return (
             <div
               key={tile.id}
               data-tile-id={tile.id}
-              className={`relative cursor-pointer transition-all duration-150 hover:bg-yellow-400/20 rounded-sm ${highlightedTile === tile.id ? 'animate-tile-highlight' : ''}`}
+              className={`relative cursor-pointer transition-all duration-200 hover:brightness-110 group ${highlightedTile === tile.id ? 'animate-tile-highlight z-30' : 'z-10'}`}
               style={{ gridRow: pos.row, gridColumn: pos.col }}
               onClick={() => onTileClick(tile)}
             >
-              <div className="absolute inset-0">
+              <div className="absolute inset-0 group-hover:z-50">
                 <Tile tileData={tile} orientation={getTileOrientation(tile.id)} />
               </div>
             </div>
           );
         })}
 
-        {/* Trung tâm bàn cờ (tỷ lệ theo chiều cao mới) */}
+        {/* Trung tâm bàn cờ - Vietnamese Lacquer Style */}
         <div
-          className="absolute flex items-center justify-center bg-[#4a3f35] rounded-lg border-4 border-yellow-700/80 shadow-inner"
+          className="absolute flex items-center justify-center bg-lacquer-black rounded-xl border-4 border-vn-gold/60 shadow-inner"
           style={{
-             // inset tính từ cạnh board, bằng 1 ô ngoài + 1 gap
-            // 1.5fr / (1.5 + 9 + 1.5)fr ~ 12.5%. Thêm ~1% cho gap/padding.
             inset: '13.5%',
             backgroundImage: `
-              radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, transparent 60%),
-              url('https://www.transparenttextures.com/patterns/wood-pattern.png')
+              radial-gradient(circle at center, rgba(196, 30, 58, 0.15) 0%, transparent 60%),
+              radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 80%)
             `,
-            boxShadow: 'inset 0 0 50px rgba(0,0,0,0.7), 0 5px 15px rgba(0,0,0,0.3)'
+            boxShadow: 'inset 0 0 80px rgba(0,0,0,0.9), 0 5px 20px rgba(0,0,0,0.5)'
           }}
         >
-          <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-             <svg width="60%" height="60%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <path d="M50 0 L61.2 34.5 L97.5 34.5 L68.1 55.9 L79.4 90.5 L50 69.1 L20.6 90.5 L31.9 55.9 L2.5 34.5 L38.8 34.5 Z" fill="#b91c1c" />
+          {/* Bronze Drum Pattern - Center */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
+            <svg width="70%" height="70%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              {/* Outer circle */}
+              <circle cx="100" cy="100" r="95" fill="none" stroke="#D4AF37" strokeWidth="3" />
+              {/* Inner concentric circles */}
+              <circle cx="100" cy="100" r="75" fill="none" stroke="#D4AF37" strokeWidth="2" />
+              <circle cx="100" cy="100" r="55" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+              <circle cx="100" cy="100" r="35" fill="none" stroke="#D4AF37" strokeWidth="1" />
+              {/* Center sun */}
+              <circle cx="100" cy="100" r="18" fill="#D4AF37" opacity="0.8" />
+              {/* Sun rays */}
+              {[...Array(16)].map((_, i) => (
+                <line
+                  key={i}
+                  x1="100"
+                  y1="100"
+                  x2={100 + 30 * Math.cos((i * 22.5 * Math.PI) / 180)}
+                  y2={100 + 30 * Math.sin((i * 22.5 * Math.PI) / 180)}
+                  stroke="#D4AF37"
+                  strokeWidth="2"
+                />
+              ))}
             </svg>
           </div>
-           <div className="relative z-10 w-full h-full flex items-center justify-center">
+
+          {/* Center Pattern Border */}
+          <div className="absolute inset-0 border-2 border-dashed border-vn-gold/20 rounded-lg m-4 pointer-events-none"></div>
+
+          <div className="relative z-10 w-full h-full flex items-center justify-center">
             {children}
           </div>
         </div>
 
         {/* Quân cờ giữ theo tọa độ tuyệt đối */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none z-40">
           {Object.keys(tilePositions).length > 0 &&
             activePlayers.map((player) => {
               const pos = tilePositions[player.position];
+              // Only render if we have valid position data
+              if (!pos || pos.width === 0 || pos.height === 0) return null;
+
               const playersOnSameTile = playersByPosition[player.position] || [];
               const offsetIndex = playersOnSameTile.findIndex(p => p.id === player.id);
               const totalOnTile = playersOnSameTile.length;
-              
+
               const isTargetBeingImpacted = attackAnimation?.stage === 'impacting' && player.id === attackAnimation.targetId;
               const isAttackerAnimating = attackAnimation && player.id === attackAnimation.attackerId && (attackAnimation.stage === 'moving_to_target' || attackAnimation.stage === 'attacker_returning');
 
               return (
-                 <PlayerPiece
-                    key={player.id}
-                    characterImg={player.characterImg}
-                    top={pos?.top ?? 0}
-                    left={pos?.left ?? 0}
-                    width={pos?.width ?? 0}
-                    height={pos?.height ?? 0}
-                    isCurrent={player.id === currentPlayerId}
-                    offsetIndex={offsetIndex}
-                    totalOnTile={totalOnTile}
-                    isBeingAttacked={isTargetBeingImpacted}
-                    animationDuration={isAttackerAnimating ? 800 : 300}
-                  />
+                <PlayerPiece
+                  key={player.id}
+                  characterImg={player.characterImg}
+                  top={pos.top}
+                  left={pos.left}
+                  width={pos.width}
+                  height={pos.height}
+                  isCurrent={player.id === currentPlayerId}
+                  offsetIndex={offsetIndex}
+                  totalOnTile={totalOnTile}
+                  isBeingAttacked={isTargetBeingImpacted}
+                  animationDuration={isAttackerAnimating ? 800 : 300}
+                />
               );
             })}
         </div>

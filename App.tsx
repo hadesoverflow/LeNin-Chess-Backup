@@ -61,7 +61,7 @@ const App: React.FC = () => {
                 if (appState !== 'playing' && appState !== 'gameover') {
                     setAppState('playing');
                 }
-                 if (updatedRoom.gameState.winner && appState !== 'gameover') {
+                if (updatedRoom.gameState.winner && appState !== 'gameover') {
                     setAppState('gameover');
                 }
             }
@@ -79,7 +79,7 @@ const App: React.FC = () => {
             return () => gameService.unsubscribe(subscribedRoomId!, handleUpdate);
         }
     }, [gameMode, room, appState]);
-    
+
     // Attack animation orchestrator
     useEffect(() => {
         if (!gameState?.attackAnimation) return;
@@ -87,20 +87,20 @@ const App: React.FC = () => {
         const { stage } = gameState.attackAnimation;
         const roomId = room?.id || LOCAL_ROOM_ID;
 
-        switch(stage) {
+        switch (stage) {
             case 'moving_to_target':
                 // After 800ms for the piece to travel
                 setTimeout(() => gameService.proceedAttackAnimation(roomId), 800);
                 break;
             case 'impacting':
-                 // After 500ms for the shake animation
+                // After 500ms for the shake animation
                 setTimeout(() => gameService.proceedAttackAnimation(roomId), 500);
                 break;
             case 'attacker_returning':
                 // After 800ms for the piece to return
                 setTimeout(() => gameService.proceedAttackAnimation(roomId), 800);
                 break;
-             // 'target_moving_back' is handled by a callback within the game service
+            // 'target_moving_back' is handled by a callback within the game service
         }
 
     }, [gameState?.attackAnimation, room?.id, gameMode]);
@@ -113,27 +113,40 @@ const App: React.FC = () => {
             const boardRect = boardRef.current.getBoundingClientRect();
             const newPositions: { [key: number]: { top: number; left: number; width: number; height: number; } } = {};
             const tileElements = boardRef.current.querySelectorAll('[data-tile-id]');
-    
+
+            const boardBorderTop = boardRef.current.clientTop || 0;
+            const boardBorderLeft = boardRef.current.clientLeft || 0;
+
             tileElements.forEach(tileEl => {
                 const tileId = parseInt(tileEl.getAttribute('data-tile-id')!, 10);
                 const tileRect = tileEl.getBoundingClientRect();
                 newPositions[tileId] = {
-                    top: tileRect.top - boardRect.top,
-                    left: tileRect.left - boardRect.left,
+                    top: tileRect.top - boardRect.top - boardBorderTop,
+                    left: tileRect.left - boardRect.left - boardBorderLeft,
                     width: tileRect.width,
                     height: tileRect.height
                 };
             });
             setTilePositions(newPositions);
         };
-        
+
         if (appState === 'playing' || appState === 'gameover') {
-            calculatePositions();
+            // Use requestAnimationFrame to ensure DOM is fully painted before calculating
+            // Also add a small delay to handle font loading and layout shifts
+            const rafId = requestAnimationFrame(() => {
+                setTimeout(calculatePositions, 100);
+            });
+
+            // Recalculate on resize
             window.addEventListener('resize', calculatePositions);
-            return () => window.removeEventListener('resize', calculatePositions);
+
+            return () => {
+                cancelAnimationFrame(rafId);
+                window.removeEventListener('resize', calculatePositions);
+            };
         }
     }, [appState]);
-    
+
     const handleStartLocalGame = (config: GameSetupConfig) => {
         const playerConfigs: PlayerConfig[] = [{ name: config.name, characterImg: config.characterImg, isBot: false }];
 
@@ -174,13 +187,13 @@ const App: React.FC = () => {
         setSession(session);
         setAppState('lobby');
     };
-    
+
     const handleStartOnlineGame = () => {
         if (room && session?.id === room.hostId) {
             gameService.startGame(room.id);
         }
     };
-    
+
     const handleClearLog = useCallback(() => {
         const roomId = gameMode === 'local' ? LOCAL_ROOM_ID : room?.id;
         if (roomId) gameService.clearLog(roomId);
@@ -196,9 +209,9 @@ const App: React.FC = () => {
         setSelectedTile(null);
         setIsEndGameModalOpen(false);
     };
-    
+
     const handleTileClick = (tileData: TileData) => setSelectedTile(tileData);
-    
+
     const handleQuestionAnswer = (answerIndex: number) => {
         const roomId = gameMode === 'local' ? LOCAL_ROOM_ID : room?.id;
         const sessionId = gameMode === 'local' ? gameState?.players[gameState.currentPlayerIndex].sessionId : session?.id;
@@ -253,7 +266,7 @@ const App: React.FC = () => {
             gameService.executePendingTileEffect(roomId);
         }
     };
-    
+
     const handleUseLifeline = (type: 'eliminate' | 'ai_help') => {
         const { roomId, sessionId } = getRoomAndSessionId();
         if (roomId && sessionId) gameService.requestLifeline(roomId, sessionId, type);
@@ -300,27 +313,27 @@ const App: React.FC = () => {
                                 );
                             })}
                         </div>
-                         <button onClick={() => handleCardPurchase(null)} className="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-700 mt-4">
+                        <button onClick={() => handleCardPurchase(null)} className="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-700 mt-4">
                             Bỏ qua
                         </button>
                     </Modal>
                 );
-            
+
             case 'attack':
             case 'opportunity_link':
                 const title = pendingAction.type === 'attack' ? "Phê Bình Đối Thủ" : "Liên Kết Tư Tưởng";
                 const buttonText = pendingAction.type === 'attack' ? "Tấn công" : "Liên kết";
                 const handler = pendingAction.type === 'attack' ? handleAttack : handleOpportunityLink;
                 return (
-                     <Modal title={title} onClose={() => handler(null)}>
+                    <Modal title={title} onClose={() => handler(null)}>
                         <p className="text-lg mb-4">Chọn một người chơi:</p>
                         <div className="flex flex-col gap-2">
                             {pendingAction.options.map(p => (
-                                <button key={p.id} onClick={() => handler(p.id)} className="w-full text-white font-bold py-3 px-4 rounded-lg shadow" style={{backgroundColor: p.color}}>
+                                <button key={p.id} onClick={() => handler(p.id)} className="w-full text-white font-bold py-3 px-4 rounded-lg shadow" style={{ backgroundColor: p.color }}>
                                     {p.name}
                                 </button>
                             ))}
-                             <button onClick={() => handler(null)} className="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-700 mt-2">
+                            <button onClick={() => handler(null)} className="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-700 mt-2">
                                 Bỏ qua
                             </button>
                         </div>
@@ -330,10 +343,10 @@ const App: React.FC = () => {
             case 'investment_bet':
                 const betOptions = [100, 200, 300].filter(bet => currentPlayer.kp >= bet * 2); // Player must be able to cover a loss
                 return (
-                     <Modal title="Đầu Tư Mạo Hiểm" onClose={() => handleInvestmentBet(0)}>
+                    <Modal title="Đầu Tư Mạo Hiểm" onClose={() => handleInvestmentBet(0)}>
                         <p className="text-lg mb-4">Chọn mức KP để đặt cược. Trả lời đúng sẽ nhân đôi số tiền cược, sai sẽ mất gấp đôi!</p>
                         <div className="flex flex-col gap-2">
-                           {betOptions.length > 0 ? betOptions.map(bet => (
+                            {betOptions.length > 0 ? betOptions.map(bet => (
                                 <button key={bet} onClick={() => handleInvestmentBet(bet)} className="w-full bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-yellow-700">
                                     Cược {bet} KP
                                 </button>
@@ -348,7 +361,7 @@ const App: React.FC = () => {
             default: return null;
         }
     };
-    
+
     const renderContent = () => {
         switch (appState) {
             case 'main_menu': return <MainMenu onNavigate={(target) => setAppState(target)} />;
@@ -362,7 +375,7 @@ const App: React.FC = () => {
 
                 const { players, currentPlayerIndex, kpChanges, highlightedTile, dice, isRolling, canRoll, log, currentQuestion, pendingAction, quizState, tileEffectResult, pendingLifelinePurchase, lifelineStatus, attackAnimation } = gameState;
                 const currentPlayer = players[currentPlayerIndex];
-                
+
                 let questionForModal = null;
                 if (quizState) {
                     // Make sure not to go out of bounds if quiz is finishing
@@ -379,7 +392,7 @@ const App: React.FC = () => {
                             <div className="flex flex-col gap-6 min-h-0 overflow-y-auto pr-2">
                                 <PlayerDashboard players={players} currentPlayerId={currentPlayer.id} kpChanges={kpChanges} />
                                 {currentPlayer && !currentPlayer.isEliminated && <CurrentPlayerStats player={currentPlayer} />}
-                                 {appState === 'playing' && (
+                                {appState === 'playing' && (
                                     <button onClick={() => setIsEndGameModalOpen(true)} className="w-full bg-red-800 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-red-900 transition-all">
                                         Kết Thúc Trò Chơi
                                     </button>
@@ -389,22 +402,22 @@ const App: React.FC = () => {
                             {/* Center Panel (Game Board) */}
                             <div className="flex flex-col items-center justify-center min-h-0">
                                 <GameBoard ref={boardRef} highlightedTile={highlightedTile} tilePositions={tilePositions} players={players} currentPlayerId={currentPlayer.id} onTileClick={handleTileClick} attackAnimation={attackAnimation}>
-                                     <ControlPanel currentPlayer={currentPlayer} onRollDice={() => gameService.rollDice(room?.id || LOCAL_ROOM_ID, currentPlayer.sessionId)} dice={dice} canRoll={canRoll && !currentPlayer.isEliminated && (gameMode === 'local' || session?.id === currentPlayer.sessionId)} isRolling={isRolling} />
+                                    <ControlPanel currentPlayer={currentPlayer} onRollDice={() => gameService.rollDice(room?.id || LOCAL_ROOM_ID, currentPlayer.sessionId)} dice={dice} canRoll={canRoll && !currentPlayer.isEliminated && (gameMode === 'local' || session?.id === currentPlayer.sessionId)} isRolling={isRolling} />
                                 </GameBoard>
                             </div>
-                            
+
                             {/* Right Panel */}
                             <div className="flex flex-col gap-6 min-h-0">
                                 <GameLog log={log} onClearLog={handleClearLog} />
                             </div>
                         </div>
-                        
+
                         {/* Modals */}
                         {tileEffectResult && (
                             <Modal title={tileEffectResult.tileName.split(' ').slice(0, -1).join(' ')} onClose={handleCloseTileEffectModal}>
                                 <div className="text-center flex flex-col items-center">
                                     <div className="text-7xl mb-4">{tileEffectResult.icon}</div>
-                                    <p className="text-stone-800 text-lg leading-relaxed" style={{whiteSpace: 'pre-wrap'}}>{tileEffectResult.message}</p>
+                                    <p className="text-stone-800 text-lg leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>{tileEffectResult.message}</p>
                                 </div>
                             </Modal>
                         )}
@@ -416,7 +429,7 @@ const App: React.FC = () => {
                             const cost = type === 'eliminate' ? 200 : 300;
                             const name = type === 'eliminate' ? 'Loại Trừ 2 Đáp Án' : 'Hỏi AI Bot';
                             const canAfford = currentPlayer.kp >= cost;
-                            
+
                             return (
                                 <Modal title="Xác Nhận Mua" onClose={() => handleResolveLifelinePurchase(false)} footer={
                                     <div className="flex flex-col gap-2">
@@ -487,7 +500,7 @@ const App: React.FC = () => {
     };
 
     const isQuestionVisible = !!gameState?.currentQuestion || !!gameState?.quizState;
-    
+
     const VolumeIcon = () => {
         if (volume === 0) {
             return (
@@ -499,7 +512,7 @@ const App: React.FC = () => {
         }
         if (volume <= 0.5) {
             return (
-                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
             );
@@ -523,14 +536,14 @@ const App: React.FC = () => {
                 <div className="relative flex flex-col items-center">
                     <button
                         onClick={() => setShowVolumeSlider(prev => !prev)}
-                        className="bg-black/50 text-white rounded-full p-3 hover:bg-black/75 transition-colors shadow-lg"
+                        className="bg-lacquer-black/80 text-vn-gold rounded-full p-3 hover:bg-lacquer-black transition-colors shadow-lg border-2 border-vn-gold/50 hover:border-vn-gold"
                         aria-label="Điều khiển âm lượng"
                         title="Điều khiển âm lượng"
                     >
                         <VolumeIcon />
                     </button>
                     {showVolumeSlider && (
-                        <div className="absolute top-14 bg-black/60 p-3 rounded-lg shadow-lg backdrop-blur-sm">
+                        <div className="absolute top-14 bg-lacquer-black/90 p-3 rounded-lg shadow-lg backdrop-blur-sm border border-vn-gold/30">
                             <input
                                 type="range"
                                 min="0"
@@ -538,7 +551,7 @@ const App: React.FC = () => {
                                 step="0.01"
                                 value={volume}
                                 onChange={(e) => setVolume(parseFloat(e.target.value))}
-                                className="w-24 h-2 bg-gray-400 rounded-lg appearance-none cursor-pointer accent-yellow-300"
+                                className="w-24 h-2 bg-stone-600 rounded-lg appearance-none cursor-pointer accent-vn-gold"
                             />
                         </div>
                     )}
