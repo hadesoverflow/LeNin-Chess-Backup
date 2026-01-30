@@ -53,16 +53,17 @@ const JoinRoom: React.FC<JoinRoomProps> = ({ onJoinSuccess, onBack }) => {
         }}
       >
         <h1
-          className="font-display text-5xl text-[#6b4c2f] text-center mb-8"
+          className="font-display text-5xl text-[#6b4c2f] text-center mb-2"
           style={{ textShadow: '1px 1px #fdf6e3' }}
         >
-          Tham Gia Phòng
+          👥 Tham Gia Phòng
         </h1>
+        <p className="text-center text-stone-600 text-sm mb-6">Yêu cầu mã phòng từ chủ phòng</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="playerName" className="block text-lg font-medium text-stone-800 mb-2">
-              Tên của bạn:
+              👤 Tên của bạn:
             </label>
             <input
               type="text"
@@ -78,23 +79,23 @@ const JoinRoom: React.FC<JoinRoomProps> = ({ onJoinSuccess, onBack }) => {
 
           <div>
             <label htmlFor="roomId" className="block text-lg font-medium text-stone-800 mb-2">
-              Mã phòng:
+              🔑 Mã phòng:
             </label>
             <input
               type="text"
               id="roomId"
               value={roomId}
               onChange={handleRoomIdChange}
-              className={`${inputClass} uppercase tracking-widest font-mono`}
-              placeholder="Nhập mã 6 ký tự..."
+              className={`${inputClass} uppercase tracking-widest font-mono text-2xl text-center font-bold`}
+              placeholder="VD: ABC123"
               maxLength={6}
               required
             />
-            {error && <p className="text-red-600 font-bold text-center mt-2">{error}</p>}
+            {error && <p className="text-red-600 font-bold text-center mt-2">❌ {error}</p>}
           </div>
 
           <div>
-            <label className="block text-lg font-medium text-stone-800 mb-3">Chọn nhân vật:</label>
+            <label className="block text-lg font-medium text-stone-800 mb-3">🎭 Chọn nhân vật:</label>
             <div className="grid grid-cols-4 gap-4">
               {CHARACTERS_LIST.map((char) => (
                 <button
@@ -133,14 +134,14 @@ const JoinRoom: React.FC<JoinRoomProps> = ({ onJoinSuccess, onBack }) => {
               onClick={onBack}
               className={`${buttonBaseClass} bg-[#585858] hover:bg-[#4a4a4a]`}
             >
-              Quay Lại
+              ← Quay Lại
             </button>
             <button
               type="submit"
               disabled={!name.trim() || !roomId.trim()}
-              className={`${buttonBaseClass} bg-blue-600 hover:bg-blue-700`}
+              className={`${buttonBaseClass} bg-blue-600 hover:bg-blue-700 transform hover:scale-105 disabled:transform-none`}
             >
-              Vào Phòng
+              ✓ Vào Phòng
             </button>
           </div>
         </form>
