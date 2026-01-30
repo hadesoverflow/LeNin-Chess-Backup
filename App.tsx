@@ -240,7 +240,7 @@ const App: React.FC = () => {
         if (!gameState?.questionHistory?.length) return;
         const mainPlayer = gameState.players.find(p => !p.isBot) || gameState.players[0];
         const historyForExport = gameState.questionHistory.map(({ playerName, playerId, ...rest }) => rest);
-        const exportData = { name: mainPlayer.name, gameSubject: 'MLN111: Triết Học Mác-LeNin', history: historyForExport };
+        const exportData = { name: mainPlayer.name, gameSubject: 'MLN131: Triết Học Mác-LeNin', history: historyForExport };
         const jsonData = JSON.stringify(exportData, null, 2);
         const blob = new Blob([jsonData], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
