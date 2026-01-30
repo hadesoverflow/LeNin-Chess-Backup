@@ -26,7 +26,7 @@ const CurrentPlayerStats: React.FC<CurrentPlayerStatsProps> = ({ player }) => {
         <StatItem label="Điểm tri thức" value={`${player.kp} KP`} className="text-blue-800" />
         <StatItem label="Vị trí" value={currentTile?.name.split(' ').slice(0, -1).join(' ') || 'Không xác định'} />
         <StatItem label="Câu hỏi đã trả lời" value={player.answeredQuestionsCount} />
-        <StatItem label="Số vòng đã đi" value={`${player.laps} / 10`} />
+        <StatItem label="Số vòng đã đi" value={`${player.laps}`} />
         <StatItem label="Số lần thưởng/phạt" value={player.kpHistory.length} />
       </div>
     </div>

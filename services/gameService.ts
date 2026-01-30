@@ -22,7 +22,7 @@ const LIFELINE_COSTS = {
 class GameService {
     private rooms: Map<string, Room> = new Map(); // Fallback for local game
     private listeners: Map<string, GameStateListener[]> = new Map();
-    
+
     // --- Room Management ---
     public async createRoom(hostName: string, characterImg: string, numBots: number): Promise<{ room: Room; session: Session }> {
         const roomId = this.generateRoomId();
@@ -33,10 +33,10 @@ class GameService {
             sessions: [hostSession],
             gameState: null,
         };
-        
+
         let availableChars = CHARACTERS_LIST.filter(c => c.img !== characterImg);
 
-        for(let i=0; i < numBots; i++) {
+        for (let i = 0; i < numBots; i++) {
             if (newRoom.sessions.length >= 6) break;
             if (availableChars.length === 0) break; // No more unique characters
 
@@ -64,11 +64,11 @@ class GameService {
         }
         const newSession = this.createSession(playerName, characterImg);
         room.sessions.push(newSession);
-        
+
         // Save to storage
         await storageService.saveRoom(room);
         this.rooms.set(room.id, room); // Keep local copy
-        
+
         this.notifyListeners(room.id);
         return { room, session: newSession };
     }
@@ -76,7 +76,7 @@ class GameService {
     public async addBot(roomId: string, hostSessionId: string) {
         const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
         if (!room || room.hostId !== hostSessionId || room.sessions.length >= 6) return;
-        
+
         const usedImages = room.sessions.map(s => s.characterImg);
         let availableChars = CHARACTERS_LIST.filter(c => !usedImages.includes(c.img));
         if (availableChars.length === 0) {
@@ -84,17 +84,17 @@ class GameService {
         }
         const botChar = availableChars[Math.floor(Math.random() * availableChars.length)];
         const botNumber = room.sessions.filter(s => s.isBot).length + 1;
-    
+
         const botSession = this.createSession(`Bot ${botNumber}`, botChar.img, true);
         room.sessions.push(botSession);
-        
+
         // Save to storage
         await storageService.saveRoom(room);
         this.rooms.set(roomId, room);
-        
+
         this.notifyListeners(roomId);
     }
-    
+
     public async removeBot(roomId: string, hostSessionId: string, botSessionId: string) {
         const room = await storageService.getRoom(roomId) || this.rooms.get(roomId);
         if (!room || room.hostId !== hostSessionId) return;
@@ -102,22 +102,22 @@ class GameService {
         const botIndex = room.sessions.findIndex(s => s.id === botSessionId && s.isBot);
         if (botIndex > -1) {
             room.sessions.splice(botIndex, 1);
-            
+
             // Save to storage
             await storageService.saveRoom(room);
             this.rooms.set(roomId, room);
-            
+
             this.notifyListeners(roomId);
         }
     }
-    
+
     // --- Game Lifecycle ---
 
     public createLocalGame(playerConfigs: PlayerConfig[]): GameState {
         const sessions = playerConfigs.map(config => this.createSession(config.name, config.characterImg, !!config.isBot));
         return this.initializeGameState(sessions);
     }
-    
+
     public registerLocalGame(gameState: GameState) {
         if (this.rooms.has(LOCAL_ROOM_ID)) {
             this.rooms.delete(LOCAL_ROOM_ID);
@@ -139,11 +139,11 @@ class GameService {
 
         room.gameState = this.initializeGameState(room.sessions);
         this.addLog(room.id, `Trò chơi bắt đầu! Lượt của ${room.gameState.players[0].name}.`);
-        
+
         // Save to storage
         await storageService.saveRoom(room);
         this.rooms.set(roomId, room);
-        
+
         this.notifyListeners(roomId);
         this.checkBotTurn(roomId);
     }
@@ -154,16 +154,16 @@ class GameService {
         const room = this.rooms.get(roomId);
         if (!room?.gameState?.canRoll || room.gameState.winner) return;
         const state = room.gameState;
-        
+
         const currentPlayer = state.players[state.currentPlayerIndex];
         if (currentPlayer.sessionId !== sessionId || state.isRolling || currentPlayer.isEliminated) return;
-        
+
         const diceResult = Math.floor(Math.random() * 6) + 1;
-        
+
         state.dice = diceResult;
         state.isRolling = true;
         this.notifyListeners(roomId);
-        
+
         setTimeout(() => {
             const roomAfterTimeout = this.rooms.get(roomId);
             if (!roomAfterTimeout?.gameState) return;
@@ -173,16 +173,16 @@ class GameService {
             stateAfterTimeout.canRoll = false;
             this.addLog(roomId, `${currentPlayer.name} đã gieo được ${diceResult} điểm.`);
             this.notifyListeners(roomId);
-            
+
             setTimeout(() => this.movePlayer(roomId, diceResult), 500);
 
-        }, 1500); 
+        }, 1500);
     }
 
     public handleQuestionAnswer(roomId: string, sessionId: string, answerIndex: number) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState || (!room.gameState.currentQuestion && !room.gameState.quizState)) return;
-    
+
         const state = room.gameState;
         const player = state.players[state.currentPlayerIndex];
         if (player.sessionId !== sessionId) return;
@@ -195,9 +195,9 @@ class GameService {
         if (linkingPlayer) {
             const kpValues = isCorrect ? [100, 150, 200] : [-100, -150, -200];
             const amount = kpValues[Math.floor(Math.random() * kpValues.length)];
-            
+
             this.addLog(roomId, `Do liên kết tư tưởng, ${linkingPlayer.name} và ${player.name} cùng ${amount > 0 ? 'nhận' : 'mất'} ${Math.abs(amount)} KP!`);
-            
+
             // Use a slight delay to show separate KP animations
             this.updatePlayerKP(roomId, player.id, amount);
             setTimeout(() => this.updatePlayerKP(roomId, linkingPlayer.id, amount), 100);
@@ -210,9 +210,9 @@ class GameService {
             this.handleQuizAnswer(roomId, player, answerIndex, isCorrect, question);
             return;
         }
-        
+
         player.answeredQuestionsCount += 1;
-        
+
         const historyEntry: AnsweredQuestion = {
             questionContent: question.content,
             answers: question.answers,
@@ -248,7 +248,7 @@ class GameService {
                     const penaltyAmount = -100;
                     this.addLog(roomId, `${player.name} đã trả lời sai và bị trừ ${Math.abs(penaltyAmount)} KP.`);
                     this.updatePlayerKP(roomId, player.id, penaltyAmount);
-                    
+
                     state.tileEffectResult = {
                         tileName: "Trả lời sai!",
                         message: `Bạn đã trả lời sai và bị trừ ${Math.abs(penaltyAmount)} KP.\n\nĐáp án đúng là: ${question.answers.find(a => a.correct)?.content || ''}`,
@@ -256,7 +256,7 @@ class GameService {
                     };
                     state.pendingTileEffect = { type: 'end_turn' };
                     this.notifyListeners(roomId);
-                    
+
                     if (player.isBot) {
                         setTimeout(() => this.executePendingTileEffect(roomId), 2000);
                     }
@@ -264,7 +264,7 @@ class GameService {
             }
             return;
         }
-        
+
         // --- Handle Investment Question ---
         if (state.questionContext?.type === 'investment') {
             const betAmount = state.questionContext.betAmount;
@@ -274,27 +274,27 @@ class GameService {
             const kpChange = isCorrect ? betAmount * 2 : -betAmount * 2;
             let message = `${player.name} đã trả lời ${isCorrect ? 'đúng' : 'sai'} và ${isCorrect ? 'thắng' : 'thua'} ${Math.abs(kpChange)} KP!`;
             if (!isCorrect) {
-                 message += `\nĐáp án đúng: ${question.answers.find(a => a.correct)?.content || ''}`;
+                message += `\nĐáp án đúng: ${question.answers.find(a => a.correct)?.content || ''}`;
             }
             this.addLog(roomId, message);
-            
+
             state.tileEffectResult = {
                 tileName: "Kết Quả Đầu Tư",
                 message: message,
                 icon: isCorrect ? "🎉" : "😭"
             };
             state.pendingTileEffect = { type: 'kp_change_investment', amount: kpChange, playerId: player.id };
-            
+
             this.notifyListeners(roomId);
             if (player.isBot) {
-                 setTimeout(() => this.executePendingTileEffect(roomId), 2000);
+                setTimeout(() => this.executePendingTileEffect(roomId), 2000);
             }
             return;
         }
     }
-    
+
     // --- Resolution methods for pending actions ---
-    
+
     public resolveCardPurchase(roomId: string, sessionId: string, cardType: CardType | null) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -319,7 +319,7 @@ class GameService {
 
         this.endTurn(roomId, player.sessionId, true);
     }
-    
+
     public resolveAttackAction(roomId: string, sessionId: string, targetPlayerId: number | null) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -334,7 +334,7 @@ class GameService {
             this.endTurn(roomId, attacker.sessionId, true);
             return;
         }
-        
+
         const targetPlayer = state.players.find(p => p.id === targetPlayerId);
 
         if (targetPlayer && !targetPlayer.isEliminated) {
@@ -398,7 +398,7 @@ class GameService {
         if (!room?.gameState) return;
         const player = this.getCurrentPlayer(room.gameState);
         if (player.sessionId !== sessionId) return;
-        
+
         room.gameState.pendingAction = null;
         const targetPlayer = room.gameState.players.find(p => p.id === targetPlayerId);
 
@@ -406,7 +406,7 @@ class GameService {
             player.linkedPlayerId = targetPlayer.id;
             this.addLog(roomId, `${player.name} đã liên kết tư tưởng với ${targetPlayer.name} cho lượt tiếp theo!`);
         }
-        
+
         this.endTurn(roomId, player.sessionId, true);
     }
 
@@ -436,7 +436,7 @@ class GameService {
         }
     }
 
-     public executePendingTileEffect(roomId: string) {
+    public executePendingTileEffect(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState?.pendingTileEffect) return;
 
@@ -446,15 +446,15 @@ class GameService {
 
         state.tileEffectResult = null;
         state.pendingTileEffect = null;
-        
+
         if (player.isEliminated) { // If player got eliminated by a penalty, just end turn
             this.endTurn(roomId, player.sessionId, true);
             return;
         }
 
-        let shouldEndTurn = false; 
+        let shouldEndTurn = false;
 
-        switch(effect.type) {
+        switch (effect.type) {
             case 'kp_change':
                 this.updatePlayerKP(roomId, player.id, effect.amount);
                 shouldEndTurn = true;
@@ -465,11 +465,11 @@ class GameService {
                 break;
             case 'move_offset':
                 this.movePlayerByOffset(roomId, player.id, effect.offset, true);
-                shouldEndTurn = false; 
+                shouldEndTurn = false;
                 break;
             case 'action':
                 const { actionType, ...data } = effect;
-                switch(actionType) {
+                switch (actionType) {
                     case 'show_card_shop':
                         state.pendingAction = { type: 'show_card_shop' };
                         break;
@@ -483,9 +483,9 @@ class GameService {
                         state.pendingAction = { type: 'opportunity_link', options: data.options };
                         break;
                 }
-                shouldEndTurn = false; 
-                this.notifyListeners(roomId); 
-                this.handleBotPendingAction(roomId); 
+                shouldEndTurn = false;
+                this.notifyListeners(roomId);
+                this.handleBotPendingAction(roomId);
                 break;
             case 'buff':
                 if (effect.buffType === 'knowledge_fund') {
@@ -502,15 +502,15 @@ class GameService {
                 shouldEndTurn = true;
                 break;
         }
-        
+
         if (shouldEndTurn) {
             this.endTurn(roomId, player.sessionId, true);
         } else {
             this.notifyListeners(roomId);
         }
     }
-    
-     // --- Lifeline Actions ---
+
+    // --- Lifeline Actions ---
     public requestLifeline(roomId: string, sessionId: string, type: 'eliminate' | 'ai_help') {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -528,7 +528,7 @@ class GameService {
             this.notifyListeners(roomId);
         }
     }
-    
+
     public resolveLifelinePurchase(roomId: string, sessionId: string, confirm: boolean) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState?.pendingLifelinePurchase) return;
@@ -536,7 +536,7 @@ class GameService {
         const state = room.gameState;
         const player = this.getCurrentPlayer(state);
         if (player.sessionId !== sessionId) return;
-        
+
         const purchaseType = state.pendingLifelinePurchase.type;
         state.pendingLifelinePurchase = null;
 
@@ -557,10 +557,10 @@ class GameService {
                 this.applyAiHelpLifeline(state);
             }
         }
-        
+
         this.notifyListeners(roomId);
     }
-    
+
     public clearAiHelp(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -576,7 +576,7 @@ class GameService {
             .map((ans, index) => ({ ans, index }))
             .filter(item => !item.ans.correct)
             .map(item => item.index);
-        
+
         const shuffled = incorrectIndices.sort(() => 0.5 - Math.random());
         const toEliminate = shuffled.slice(0, 2);
 
@@ -586,7 +586,7 @@ class GameService {
     private applyAiHelpLifeline(state: GameState) {
         const question = state.quizState ? state.quizState.questions[state.quizState.currentIndex] : state.currentQuestion;
         if (!question || state.lifelineStatus.ai_help) return;
-        
+
         const correctAnswer = question.answers.find(ans => ans.correct);
         if (correctAnswer) {
             state.lifelineStatus.ai_help = {
@@ -602,7 +602,7 @@ class GameService {
     private getCurrentPlayer(state: GameState): Player {
         return state.players[state.currentPlayerIndex];
     }
-    
+
     private triggerTileEffect(roomId: string, tile: TileData, pendingEffect: any, player: Player, prefixMessage: string = '') {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -610,7 +610,7 @@ class GameService {
 
         const nameParts = tile.name.split(' ');
         const icon = nameParts.pop() || '🎲';
-        
+
         const { message } = this.generateTileEffectMessage(tile, pendingEffect, player);
 
         state.tileEffectResult = {
@@ -653,19 +653,19 @@ class GameService {
         }
         return { message };
     }
-    
-     private processLandedOnTile(roomId: string, tileId: number) {
+
+    private processLandedOnTile(roomId: string, tileId: number) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState || room.gameState.winner) return;
 
         const state = room.gameState;
         const player = this.getCurrentPlayer(state);
         const tile = TILES.find(t => t.id === tileId)!;
-        
+
         let pendingEffect: any = null;
 
-        switch(tile.type) {
-             case 'start':
+        switch (tile.type) {
+            case 'start':
                 pendingEffect = { type: 'kp_change', amount: 200 };
                 break;
             case 'reward': {
@@ -696,9 +696,9 @@ class GameService {
             case 'attack':
                 const otherPlayers = state.players.filter(p => p.id !== player.id && !p.isEliminated);
                 if (otherPlayers.length > 0) {
-                  pendingEffect = { type: 'action', actionType: 'attack', options: otherPlayers };
+                    pendingEffect = { type: 'action', actionType: 'attack', options: otherPlayers };
                 } else {
-                  pendingEffect = { type: 'end_turn' };
+                    pendingEffect = { type: 'end_turn' };
                 }
                 break;
             case 'investment':
@@ -707,9 +707,9 @@ class GameService {
             case 'opportunity':
                 const opponents = state.players.filter(p => p.id !== player.id && !p.isEliminated);
                 if (opponents.length > 0) {
-                  pendingEffect = { type: 'action', actionType: 'opportunity_link', options: opponents };
+                    pendingEffect = { type: 'action', actionType: 'opportunity_link', options: opponents };
                 } else {
-                  pendingEffect = { type: 'end_turn' };
+                    pendingEffect = { type: 'end_turn' };
                 }
                 break;
             case 'knowledge_fund':
@@ -724,7 +724,7 @@ class GameService {
                 this.endTurn(roomId, player.sessionId, true);
                 return;
         }
-        
+
         const specialTiles = ['start', 'midterm_exam', 'final_exam', 'prison'];
         if (specialTiles.includes(tile.type)) {
             // Special tiles trigger their effect directly
@@ -748,14 +748,14 @@ class GameService {
     private handleQuizAnswer(roomId: string, player: Player, answerIndex: number, isCorrect: boolean, question: Question) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState?.quizState) return;
-        
+
         const state = room.gameState;
         const quiz = state.quizState;
 
         if (isCorrect) {
             quiz.correctCount += 1;
         }
-        
+
         player.answeredQuestionsCount += 1;
         const historyEntry: AnsweredQuestion = {
             questionContent: question.content,
@@ -787,11 +787,11 @@ class GameService {
                 const stateAfterDelay = roomAfterDelay.gameState;
 
                 stateAfterDelay.quizState = null;
-                
+
                 this.addLog(roomId, `${player.name} đã hoàn thành bài kiểm tra với ${quiz.correctCount}/${quiz.questions.length} câu đúng.`);
-                
+
                 let kpChange = 0;
-                switch(quiz.type) {
+                switch (quiz.type) {
                     case 'midterm_exam':
                         kpChange = quiz.correctCount >= 7 ? 300 : -200;
                         break;
@@ -805,10 +805,10 @@ class GameService {
                         break;
                 }
                 if (kpChange !== 0) {
-                     this.addLog(roomId, `${player.name} ${kpChange > 0 ? 'nhận được' : 'bị trừ'} ${Math.abs(kpChange)} KP.`);
-                     this.updatePlayerKP(roomId, player.id, kpChange);
+                    this.addLog(roomId, `${player.name} ${kpChange > 0 ? 'nhận được' : 'bị trừ'} ${Math.abs(kpChange)} KP.`);
+                    this.updatePlayerKP(roomId, player.id, kpChange);
                 }
-                
+
                 this.endTurn(roomId, player.sessionId, true);
 
             }, 2000);
@@ -818,10 +818,10 @@ class GameService {
     private startQuiz(roomId: string, player: Player, type: QuizType) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
-        
+
         const state = room.gameState;
         const questionCount = type === 'midterm_exam' ? 10 : (type === 'final_exam' ? 15 : (type === 'prison' ? 30 : 0));
-        
+
         const shuffled = [...QUESTIONS].sort(() => 0.5 - Math.random());
         const quizQuestions = shuffled.slice(0, questionCount);
 
@@ -840,15 +840,15 @@ class GameService {
             this.endTurn(roomId, player.sessionId, true);
         }
     }
-    
+
     private updatePlayerKP(roomId: string, playerId: number, amount: number, skipX2Card: boolean = false) {
-         const room = this.rooms.get(roomId);
-         if(!room || !room.gameState) return;
-         const player = room.gameState.players.find(p => p.id === playerId);
-         if (player && !player.isEliminated) {
-             let finalAmount = amount;
-             
-             // --- Point Save Card Logic ---
+        const room = this.rooms.get(roomId);
+        if (!room || !room.gameState) return;
+        const player = room.gameState.players.find(p => p.id === playerId);
+        if (player && !player.isEliminated) {
+            let finalAmount = amount;
+
+            // --- Point Save Card Logic ---
             if (finalAmount < 0) {
                 const pointSaveCardIndex = player.cards.findIndex(c => c.type === 'point_save');
                 if (pointSaveCardIndex > -1) {
@@ -858,33 +858,33 @@ class GameService {
                 }
             }
 
-             // --- x2 Points Card Logic ---
-             if (finalAmount > 0 && !skipX2Card) {
-                 const x2CardIndex = player.cards.findIndex(c => c.type === 'x2_points');
-                 if (x2CardIndex > -1) {
-                     finalAmount *= 2;
-                     player.cards.splice(x2CardIndex, 1);
-                     this.addLog(roomId, `${player.name} đã dùng thẻ 'Cảm Hứng Sáng Tạo' và nhân đôi phần thưởng!`);
-                 }
-             }
+            // --- x2 Points Card Logic ---
+            if (finalAmount > 0 && !skipX2Card) {
+                const x2CardIndex = player.cards.findIndex(c => c.type === 'x2_points');
+                if (x2CardIndex > -1) {
+                    finalAmount *= 2;
+                    player.cards.splice(x2CardIndex, 1);
+                    this.addLog(roomId, `${player.name} đã dùng thẻ 'Cảm Hứng Sáng Tạo' và nhân đôi phần thưởng!`);
+                }
+            }
 
-             player.kp += finalAmount;
-             if (finalAmount !== 0) {
+            player.kp += finalAmount;
+            if (finalAmount !== 0) {
                 player.kpHistory.push({ amount: finalAmount, turn: room.gameState.turnNumber });
-             }
-             room.gameState.kpChanges[playerId] = finalAmount;
-             this.notifyListeners(roomId);
+            }
+            room.gameState.kpChanges[playerId] = finalAmount;
+            this.notifyListeners(roomId);
 
-             setTimeout(() => {
-                 const currentRoom = this.rooms.get(roomId);
-                 if(currentRoom?.gameState?.kpChanges) {
-                     currentRoom.gameState.kpChanges[playerId] = null;
-                     this.notifyListeners(roomId);
-                 }
-             }, 2000);
+            setTimeout(() => {
+                const currentRoom = this.rooms.get(roomId);
+                if (currentRoom?.gameState?.kpChanges) {
+                    currentRoom.gameState.kpChanges[playerId] = null;
+                    this.notifyListeners(roomId);
+                }
+            }, 2000);
 
-             this.checkPlayerElimination(roomId, playerId);
-         }
+            this.checkPlayerElimination(roomId, playerId);
+        }
     }
 
     private checkPlayerElimination(roomId: string, playerId: number) {
@@ -913,17 +913,17 @@ class GameService {
         const room = this.rooms.get(roomId);
         if (!room?.gameState || room.gameState.winner) return;
         const state = room.gameState;
-        
+
         const currentPlayer = this.getCurrentPlayer(state);
         if (!fromService && (currentPlayer.sessionId !== sessionId || state.canRoll || state.isRolling)) return;
 
         if (currentPlayer.knowledgeFundBuffTurns > 0) {
             currentPlayer.knowledgeFundBuffTurns--;
         }
-        
+
         const activePlayers = state.players.filter(p => !p.isEliminated);
         if (state.players.length > 1 && activePlayers.length <= 1) {
-            if(!state.winner) {
+            if (!state.winner) {
                 state.winner = activePlayers[0] || { name: 'Không có ai' } as Player;
                 this.addLog(roomId, `Trò chơi kết thúc! Người chiến thắng là ${state.winner.name}`);
                 this.notifyListeners(roomId);
@@ -944,17 +944,17 @@ class GameService {
             state.turnNumber++;
             this.addLog(roomId, `--- Bắt đầu Vòng ${state.turnNumber} ---`);
         }
-        
+
         state.currentPlayerIndex = nextPlayerIndex;
         const nextActivePlayer = state.players[nextPlayerIndex];
 
         this.addLog(roomId, `--- [Lượt ${state.turnNumber}] L��ợt của ${nextActivePlayer.name} ---`);
         state.canRoll = true;
-        
+
         this.notifyListeners(roomId);
         this.checkBotTurn(roomId);
     }
-    
+
     // --- Movement Logic ---
     private movePlayer(roomId: string, steps: number) {
         const room = this.rooms.get(roomId);
@@ -962,7 +962,7 @@ class GameService {
         const player = this.getCurrentPlayer(room.gameState);
         this.movePlayerByOffset(roomId, player.id, steps, true);
     }
-    
+
     private movePlayerByOffset(roomId: string, playerId: number, offset: number, triggerEvents: boolean = false, onComplete?: () => void) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) {
@@ -983,7 +983,7 @@ class GameService {
             }
             const totalSteps = Math.abs(offset);
             const currentStep = totalSteps - stepsRemaining;
-            
+
             if (stepsRemaining <= 0) {
                 if (triggerEvents) {
                     this.addLog(roomId, `${player.name} đã dừng tại ô ${TILES[player.position - 1].name}.`);
@@ -1000,15 +1000,23 @@ class GameService {
 
             let nextPosition = player.position + direction;
             if (nextPosition > 40) nextPosition = 1;
-            if (nextPosition < 1) nextPosition = 40;
+
+            // Handle moving backwards past Start
+            if (nextPosition < 1) {
+                nextPosition = 40;
+                // Only decrement if we are actually crossing from 1 -> 40 backwards
+                if (direction < 0) {
+                    player.laps -= 1;
+                }
+            }
 
             player.position = nextPosition;
             state.highlightedTile = nextPosition;
 
-            if (direction > 0 && nextPosition === 1 && triggerEvents && currentStep > 0) {
+            if (direction > 0 && nextPosition === 1 && triggerEvents) {
                 this.handlePassingGo(roomId, player);
                 if (state.winner) {
-                     if (onComplete) onComplete();
+                    if (onComplete) onComplete();
                     return;
                 }
             }
@@ -1018,38 +1026,37 @@ class GameService {
             setTimeout(() => {
                 const currentRoom = this.rooms.get(roomId);
                 if (currentRoom?.gameState && !currentRoom.gameState.winner) {
-                     moveOneStep(stepsRemaining - 1, direction);
+                    moveOneStep(stepsRemaining - 1, direction);
                 } else {
-                     if (onComplete) onComplete();
+                    if (onComplete) onComplete();
                 }
-            }, 400); 
+            }, 400);
         };
-        
+
         moveOneStep(Math.abs(offset), offset > 0 ? 1 : -1);
     }
-    
+
     private handlePassingGo(roomId: string, player: Player) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
-        
+
         this.addLog(roomId, `${player.name} đi qua Bến Khởi Hành, nhận 200 KP.`);
         this.updatePlayerKP(roomId, player.id, 200);
-        
+
         player.laps += 1;
         this.addLog(roomId, `${player.name} đã hoàn thành vòng ${player.laps}.`);
         this.notifyListeners(roomId);
 
-        if (player.laps >= 10 && !room.gameState.winner) {
-            this.addLog(roomId, `TRÒ CHƠI KẾT THÚC! ${player.name} đã hoàn thành 10 vòng.`);
-            const winner = room.gameState.players.reduce((prev, current) => (prev.kp > current.kp) ? prev : current);
-            room.gameState.winner = winner;
-            this.addLog(roomId, `VINH DANH! ${winner.name} đã chiến thắng với số KP cao nhất!`);
+        if (player.laps >= 1 && !room.gameState.winner) {
+            this.addLog(roomId, `TRÒ CHƠI KẾT THÚC! ${player.name} đã hoàn thành hành trình đầu tiên.`);
+            room.gameState.winner = player;
+            this.addLog(roomId, `VINH DANH! ${player.name} đã chiến thắng rực rỡ!`);
             this.notifyListeners(roomId);
         }
     }
-    
+
     // --- Bot Logic ---
-    
+
     private checkBotTurn(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return;
@@ -1068,13 +1075,13 @@ class GameService {
             setTimeout(() => this.rollDice(roomId, player.sessionId), 2000);
         }
     }
-    
+
     private handleBotPendingAction(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState?.pendingAction) return;
         const state = room.gameState;
         const player = this.getCurrentPlayer(state);
-        if(!player.isBot) return;
+        if (!player.isBot) return;
 
         const action = state.pendingAction;
 
@@ -1090,7 +1097,7 @@ class GameService {
                 break;
             case 'attack':
             case 'opportunity_link':
-                 // Bot targets the player with the highest score
+                // Bot targets the player with the highest score
                 const target = action.options.reduce((prev, current) => (prev.kp > current.kp) ? prev : current);
                 if (action.type === 'attack') this.resolveAttackAction(roomId, player.sessionId, target.id);
                 else this.resolveOpportunityLinkAction(roomId, player.sessionId, target.id);
@@ -1106,32 +1113,32 @@ class GameService {
     private answerForBot(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room?.gameState || (!room.gameState.currentQuestion && !room.gameState.quizState)) return;
-        
+
         const state = room.gameState;
         const player = this.getCurrentPlayer(state);
         const question = state.quizState ? state.quizState.questions[state.quizState.currentIndex] : state.currentQuestion;
 
         if (!player.isBot || !question) return;
-        
+
         const correctChance = 0.75;
         const isCorrect = Math.random() < correctChance;
-        
-        let targetAnswers = question.answers.map((ans, i) => ({...ans, index: i})).filter(ans => ans.correct === isCorrect);
-        
-        if(targetAnswers.length === 0) {
-            targetAnswers = question.answers.map((ans, i) => ({...ans, index: i}));
+
+        let targetAnswers = question.answers.map((ans, i) => ({ ...ans, index: i })).filter(ans => ans.correct === isCorrect);
+
+        if (targetAnswers.length === 0) {
+            targetAnswers = question.answers.map((ans, i) => ({ ...ans, index: i }));
         }
-        
+
         const chosenAnswer = targetAnswers[Math.floor(Math.random() * targetAnswers.length)];
-        
+
         this.handleQuestionAnswer(roomId, player.sessionId, chosenAnswer.index);
     }
-    
+
     // --- Utility Methods ---
     private getNewQuestion(roomId: string): Question | null {
         const room = this.rooms.get(roomId);
         if (!room?.gameState) return null;
-        
+
         const question = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
         return question || null;
     }
@@ -1139,12 +1146,12 @@ class GameService {
     public clearLog(roomId: string) {
         const room = this.rooms.get(roomId);
         if (!room || !room.gameState) return;
-        
+
         room.gameState.log = [];
         this.addLog(roomId, 'Nhật ký đã được xóa.');
         this.notifyListeners(roomId);
     }
-    
+
     private initializeGameState(sessions: Session[]): GameState {
         const players: Player[] = sessions.map((session, index) => ({
             id: index,
@@ -1187,13 +1194,14 @@ class GameService {
             pendingTileEffect: null,
             pendingLifelinePurchase: null,
             lifelineStatus: { eliminate: null, ai_help: null },
+            startTime: Date.now(),
         };
     }
-    
+
     private addLog(roomId: string, message: string) {
         const room = this.rooms.get(roomId);
-        if(!room || !room.gameState) return;
-        
+        if (!room || !room.gameState) return;
+
         const newLogEntry: GameLogEntry = {
             turn: room.gameState.turnNumber,
             message,
@@ -1204,7 +1212,7 @@ class GameService {
             room.gameState.log.splice(0, room.gameState.log.length - 100);
         }
     }
-    
+
     private createSession(name: string, characterImg: string, isBot: boolean = false): Session {
         return { id: `session_${Date.now()}_${Math.random()}`, name, characterImg, isBot };
     }
@@ -1212,7 +1220,7 @@ class GameService {
     private generateRoomId(): string {
         return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
-    
+
     // --- Listener System ---
     public subscribe(roomId: string, listener: GameStateListener) {
         if (!this.listeners.has(roomId)) {

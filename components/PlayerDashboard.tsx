@@ -10,9 +10,10 @@ interface PlayerDashboardProps {
 const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ players, currentPlayerId, kpChanges }) => {
     return (
         <div className="glass-panel p-4 flex flex-col gap-4 max-h-full overflow-y-auto">
-            <h3 className="text-xl font-display font-bold text-center text-soviet-gold border-b border-stone-600 pb-2 mb-2 uppercase tracking-wider">
-                Các Nhà Lý Luận
-            </h3>
+
+            <h2 className="font-display text-xl text-vn-gold mb-4 text-center border-b border-vn-gold/30 pb-2 tracking-widest uppercase text-shadow">
+                Các Nhà Thám Hiểm
+            </h2>
 
             {players.map((player) => {
                 const isCurrent = player.id === currentPlayerId;

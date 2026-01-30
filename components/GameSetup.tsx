@@ -77,7 +77,7 @@ const GameSetup: React.FC<GameSetupProps> = ({ mode, onStart, onBack }) => {
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-3">
             <label htmlFor="playerName" className="block text-xl font-bold text-stone-300">
-              Tên Nhà Lý Luận:
+              Tên Nhà Thám Hiểm:
             </label>
             <input
               type="text"
@@ -117,8 +117,8 @@ const GameSetup: React.FC<GameSetupProps> = ({ mode, onStart, onBack }) => {
                   type="button"
                   onClick={() => setNumBots(count)}
                   className={`flex-1 text-center font-bold py-3 rounded-lg transition-all duration-200 ${numBots === count
-                      ? 'bg-gradient-to-br from-soviet-gold to-yellow-600 text-stone-900 shadow-lg'
-                      : 'text-stone-400 hover:bg-stone-800'
+                    ? 'bg-gradient-to-br from-soviet-gold to-yellow-600 text-stone-900 shadow-lg'
+                    : 'text-stone-400 hover:bg-stone-800'
                     }`}
                 >
                   {count === 0 ? 'Không' : `${count} Bot`}
@@ -131,14 +131,17 @@ const GameSetup: React.FC<GameSetupProps> = ({ mode, onStart, onBack }) => {
             <button
               type="button"
               onClick={onBack}
-              className="flex-1 btn-secondary text-lg py-4"
+              className="flex-1 bg-stone-600 hover:bg-stone-500 text-stone-100 font-bold py-4 px-6 rounded-xl shadow-lg border-2 border-stone-500 transition-all active:scale-95 text-xl uppercase tracking-wider"
             >
               Quay Lại
             </button>
             <button
               type="submit"
               disabled={!name.trim()}
-              className={`flex-1 btn-gold text-lg py-4`}
+              className={`flex-1 font-bold py-4 px-6 rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.4)] border-2 transition-all active:scale-95 text-xl uppercase tracking-wider ${!name.trim()
+                ? 'bg-stone-800 text-stone-600 border-stone-700 cursor-not-allowed'
+                : 'bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-red-950 border-yellow-400 hover:border-yellow-300 hover:shadow-[0_0_25px_rgba(234,179,8,0.6)] transform hover:-translate-y-1'
+                }`}
             >
               {submitButtonText}
             </button>

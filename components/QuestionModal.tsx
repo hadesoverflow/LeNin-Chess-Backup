@@ -82,7 +82,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
             <button
               title={hasFreeEliminate ? `Loại trừ (còn ${currentPlayer.knowledgeFundBuffTurns} lượt miễn phí)` : "Loại trừ hai đáp án sai (200 KP)"}
               onClick={handleEliminateClick}
-              disabled={!!lifelineStatus.eliminate}
+              disabled={!!lifelineStatus.eliminate || currentPlayer.isBot}
               className="relative p-2.5 rounded-full bg-lacquer-black hover:bg-stone-800 disabled:bg-stone-400 disabled:cursor-not-allowed transition-all text-white shadow-lg border-2 border-vn-bronze hover:border-vn-gold group active:scale-95"
             >
               {hasFreeEliminate && <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-vn-red text-[9px] font-bold text-white border border-white shadow-sm animate-bounce">FREE</span>}
@@ -91,7 +91,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
             <button
               title="Hỏi AI Bot (300 KP)"
               onClick={handleAiHelpClick}
-              disabled={!!lifelineStatus.ai_help}
+              disabled={!!lifelineStatus.ai_help || currentPlayer.isBot}
               className="relative p-2.5 rounded-full bg-lacquer-black hover:bg-stone-800 disabled:bg-stone-400 disabled:cursor-not-allowed transition-all text-white shadow-lg border-2 border-vn-bronze hover:border-blue-400 group active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" className="text-blue-300 group-hover:drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]"><path fill="currentColor" d="M19,6H5A3,3,0,0,0,2,9v6a3,3,0,0,0,3,3h14a3,3,0,0,0,3-3V9A3,3,0,0,0,19,6Z" /><circle fill="#22d3ee" cx="8.5" cy="11.5" r="1.5" /><circle fill="#22d3ee" cx="15.5" cy="11.5" r="1.5" /></svg>
@@ -128,6 +128,13 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
 
         {/* Question Box */}
         <div className="bg-white p-6 md:p-8 rounded-sm mb-8 relative border border-stone-300 shadow-sm mx-2">
+          {/* Bot Indicator */}
+          {currentPlayer.isBot && (
+            <div className="absolute top-0 inset-x-0 bg-yellow-500/20 py-1 text-center font-bold text-yellow-600 uppercase tracking-widest text-xs animate-pulse z-20">
+              Bot đang suy nghĩ...
+            </div>
+          )}
+
           {/* Folder tab look */}
           <div className="absolute -top-3 left-4 bg-stone-300 px-4 py-1 rounded-t-md text-[10px] font-bold text-stone-600 uppercase tracking-wider border border-b-0 border-stone-400">
             Nội dung câu hỏi
@@ -143,11 +150,12 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
           {question.answers.map((answer, index) => {
             const isEliminated = eliminatedAnswers.includes(index);
+            const isBot = currentPlayer.isBot;
             return (
               <button
                 key={index}
                 onClick={() => handleAnswerClick(index)}
-                disabled={isEliminated}
+                disabled={isEliminated || isBot}
                 className={`
                     w-full py-5 px-6 rounded-lg transition-all duration-200 text-left border-l-4 relative overflow-hidden group
                     shadow-[0_2px_5px_rgba(0,0,0,0.1)] active:shadow-none active:translate-y-[2px]
@@ -188,7 +196,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ question, quizState, onAn
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

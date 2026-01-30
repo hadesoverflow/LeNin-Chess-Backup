@@ -166,13 +166,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ currentPlayer, onRollDice, 
             <div className="pointer-events-auto w-full max-w-[220px] mb-4">
                 <button
                     onClick={onRollDice}
-                    disabled={!canRoll || isRolling}
+                    disabled={!canRoll || isRolling || currentPlayer.isBot}
                     className={`
                         w-full py-4 text-xl font-display font-bold uppercase tracking-widest relative overflow-hidden transition-all duration-300 group
                         bg-gradient-to-b from-vn-red to-red-900 
                         border-2 border-vn-gold shadow-[0_6px_0_#4a1a1a] hover:shadow-[0_3px_0_#4a1a1a] hover:translate-y-[3px] active:shadow-none active:translate-y-[6px]
                         rounded-lg
-                        ${!canRoll ? 'grayscale opacity-70 cursor-not-allowed shadow-none translate-y-[6px]' : 'hover:brightness-110'}
+                        ${(!canRoll || currentPlayer.isBot) ? 'grayscale opacity-70 cursor-not-allowed shadow-none translate-y-[6px]' : 'hover:brightness-110'}
                     `}
                     style={{
                         textShadow: '0 2px 0 rgba(0,0,0,0.5)'
@@ -191,7 +191,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ currentPlayer, onRollDice, 
                                 <span>Đang Gieo...</span>
                             </>
                         ) : (
-                            'Gieo Xúc Xắc'
+                            currentPlayer.isBot ? 'Bot Đang Chơi...' : 'Gieo Xúc Xắc'
                         )}
                     </span>
                 </button>

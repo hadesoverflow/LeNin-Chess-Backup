@@ -491,7 +491,27 @@ const App: React.FC = () => {
                                         <button onClick={handleReset} className="w-full bg-gray-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-gray-700 transition-all">Chơi Lại</button>
                                     </div>
                                 }>
-                                    <p className="text-xl text-center">{gameState.winner.name} đã trở thành Nhà Lý Luận Trẻ Toàn Cầu! Chúc mừng!</p>
+                                    <p className="text-xl text-center mb-4">
+                                        <span className="font-bold text-2xl text-vn-red">{gameState.winner.name}</span> đã trở thành Đại Sứ Văn Hóa Xuất Sắc!
+                                    </p>
+                                    <div className="text-center mb-4 space-y-2">
+                                        <div>
+                                            <p className="text-stone-600 font-medium">Tổng điểm tích lũy</p>
+                                            <p className="text-3xl font-bold text-yellow-600">{gameState.winner.kp} KP</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-stone-600 font-medium">Thời Gian Hoàn Thành</p>
+                                            <p className="text-xl font-bold text-stone-800 font-mono">
+                                                {(() => {
+                                                    const durationMs = Date.now() - (gameState.startTime || Date.now());
+                                                    const minutes = Math.floor(durationMs / 60000);
+                                                    const seconds = Math.floor((durationMs % 60000) / 1000);
+                                                    return `${minutes} phút ${seconds} giây`;
+                                                })()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p className="text-center text-sm text-stone-500 italic">Chúc mừng bạn đã hoàn thành hành trình bảo tồn di sản!</p>
                                 </Modal>
                             );
                         })()}

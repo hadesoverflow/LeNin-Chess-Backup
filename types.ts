@@ -19,17 +19,17 @@ export interface Player {
   isEliminated?: boolean;
 }
 
-export type TileType = 
-  | 'start' 
-  | 'reward' 
-  | 'penalty' 
-  | 'buy_card' 
-  | 'attack' 
-  | 'investment' 
-  | 'opportunity' 
-  | 'knowledge_fund' 
-  | 'midterm_exam' 
-  | 'final_exam' 
+export type TileType =
+  | 'start'
+  | 'reward'
+  | 'penalty'
+  | 'buy_card'
+  | 'attack'
+  | 'investment'
+  | 'opportunity'
+  | 'knowledge_fund'
+  | 'midterm_exam'
+  | 'final_exam'
   | 'prison'
   | 'win'
   | 'special'; // Generic special for non-interactive tiles
@@ -63,8 +63,8 @@ export interface Session {
 }
 
 export interface GameLogEntry {
-  turn: number; 
-  message: string; 
+  turn: number;
+  message: string;
   id: number;
 }
 
@@ -94,10 +94,10 @@ export interface AnsweredQuestion {
 
 // --- New states for advanced mechanics ---
 
-export type PendingAction = 
+export type PendingAction =
   | { type: 'show_card_shop' }
-  | { type: 'attack', options: Player[] } 
-  | { type: 'opportunity_link', options: Player[] } 
+  | { type: 'attack', options: Player[] }
+  | { type: 'opportunity_link', options: Player[] }
   | { type: 'investment_bet', tile: TileData }
   | null;
 
@@ -165,6 +165,7 @@ export interface GameState {
     eliminate: number[] | null;
     ai_help: { answer: string; explanation: string; } | null;
   };
+  startTime: number;
 }
 
 export interface Room {
